@@ -15,9 +15,10 @@
 ;;;				drawing and then restores the saved layer state.
 ;;;
 ;;; Code:
+(setvar "nomutt" 1)
 (defun c:SSS nil
 	;; Purge file:
-	(command "purge" "all" "*" "no")
+	(princ (command "purge" "all" "*" "no"))
 	(command "purge" "regapp" "*" "no")
 	
 	;; Save Layer State:
@@ -35,4 +36,5 @@
 	;; Restore old layer state.
 	(command "layer" "state" "restore" layerstatename "" "")
 )
+(setvar "nomutt" 0)
 ;;; SuperQuickSave.LSP

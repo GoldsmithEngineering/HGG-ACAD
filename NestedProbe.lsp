@@ -10,7 +10,9 @@
 ;;; This file is part of GNU Emacs
 ;;;
 ;;; Code:
+(setvar "nomutt" 1)
 (defun c:PB nil
 	(command "laytblprp" "nested")
 )
+(setvar "nomutt" 0)
 ;;; NestedProbe.LSP
