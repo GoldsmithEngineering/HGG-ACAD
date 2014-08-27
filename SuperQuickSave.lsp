@@ -18,7 +18,7 @@
 (setvar "nomutt" 1)
 (defun c:SSS nil
 	;; Purge file:
-	(princ (command "purge" "all" "*" "no"))
+	(command "purge" "all" "*" "no")
 	(command "purge" "regapp" "*" "no")
 	
 	;; Save Layer State:
