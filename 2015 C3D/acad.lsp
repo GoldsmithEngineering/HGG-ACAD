@@ -1,37 +1,76 @@
+;;; acad.LSP -- AutoCAD file that specifies setup and auto loading for functions.
+;;
+;;; Copyright (C) 2015, Creative Commons License.
+;;;
+;;; Author: Szabolcs Pasztor <szabolcs1992@gmail.com>
+;;; Created: 05 July 2015
+;;; Modified: 05 July 2015
+;;; Version: 1.0.0
+;;; Keywords: acad, load, setup, lsp
+;;;
+;;; Commentary: This file is used to setup AutoCAD on a first time install such that AutoCAD
+;;;             functions with the standard tools and setup desired by Goldsmith Engineering.
+;;;             It is designed to do the following:
+;;;             - Recognizes if this is a first time install (relative to the version of the file)
+;;;             - If it is, setup all of the supported paths and settings to match the companies 
+;;;               standards.
+;;;             - Set the following variables to ensure similar work-flow:
+;;;                 FONTALT = "LER.SHX"
+;;;                 INDEXCTL = 3
+;;;                 ISAVEPERCENT = 0
+;;;                 XLOADCTL = 2
+;;;                 DIMASSOC = 2
+;;;
+;;;
+;;; To Do:
+;;;     (S.P. @ 07-05-2015)         Add Documentation.
+;;;     (S.P. @ 07-05-2015)         Cross check system variables to be set.
+;;;     (S.P. @ 07-05-2015)         Create a function for initial loading (defun SETUP)
+;;;     (S.P. @ 07-05-2015)         Clean up unnecessary / legacy code.
+;;;     (S.P. @ 07-05-2015)         Add finished custom functions to auto load.
+;;;     (S.P. @ 07-05-2015)         Cross check aliases that are changed and set.
+;;;
+;;; Revisions:
+;;;     1.0.1 (S.P. @ 07-05-2015)   Added Documentation and cross checked all calls.
+;;;
+;;; Code:
 
-
-;; Silent load.
-(princ)
-(defun-q MYSTARTUP
-	 ()
-	 (SETVAR "FONTALT" "LER.SHX")
-	 (SETVAR "INDEXCTL" 3)
-	 (SETVAR "ISAVEPERCENT" 0)
-	 (SETVAR "XLOADCTL" 2)
-	 (SETVAR "DIMASSOC" 2)
-	 (SETVAR "INSUNITS" 0)
-         (SETVAR "FULLPLOTPATH" 0)
-	 (SETVAR "MAXACTVP" 64)
-	 (SETVAR "PLINETYPE" 2)
-	 (SETVAR "SDI" 1)
-	 (setvar "navvcubedisplay" 0)
-	 (setvar "maxsort" 5000)
-	 (setvar "textfill" 1)
-	 (setvar "dctmain" "enu")
-	 (setvar "menubar" 1)
-	 (graphscr)
-	 (princ)
-	 (command "._UNDEFINE" "PLOT")
-	 (command "._UNDEFINE" "LL")
-	 (command "._INSERT" "*Acad" "0,0,0" "" "")
+(defun C:LOAD_VARS
+    (setvar "FONTALT" "LER.SHX")    ; Add Leroy as alternative font.
+    (setvar "INDEXCTL" 3)           ; Layer and spatial indexes are created.
+    (setvar "ISAVEPERCENT" 0)       ; Makes every save a full save (for higher performance).
+    (setvar "XLOADCTL" 2)           ;; Turns on demand-loading. Copies of referenced drawings are
+                                    ;; opened and ; locked referenced drawings are not locked (for
+                                    ;; higher performance.)
+    (setvar "DIMASSOC" 2)           ; Allows exploded dimensions to retain their association.
+    (setvar "INSUNITS" 0)           ; Sets the units for insertions to unitless.
+    (setvar "FULLPLOTPATH" 0)       ; Sends the full path of the drawing file to the plotter.
+    (setvar "MAXACTVP" 64)          ; Set max viewports to 64 (maximum value)
+    (setvar "PLINETYPE" 2)          ;; Polylines in AutoCAD Release 14 or older drawings are
+                                    ;; converted when opened; PLINE creates optimized polylines.
+    (setvar "SDI" 0)                ; Allows for multiple drawings to be opened in AutoCAD.
+    (setvar "navvcubedisplay" 0)    ; Turn off viewcube for 2d and 3d visual styles.
+    (setvar "maxsort" 10000)        ;; Sets the maximum number of items such as file names, layer
+                                    ;; names, and block names that are sorted alphabetically in
+                                    ;; dialog boxes, drop-down lists, and palettes. 
+    (setvar "textfill" 1)           ; Displays text as filled images.
+    (setvar "dctmain" "enu")        ; Set main dictionary to American English.
+    (setvar "menubar" 1)            ; Displays the menu bar.
+    (setvar "ATTDIA" 1)             ; Uses a dialog box for insert command.
+    (setvar "ATTMODE" 1)            ; Visibly attributes are displayed and invisible are not.
+    (setvar "UCSICON" 0)            ; The USC Icon is hidden.
+    (setvar "PROXYGRAPHICS" 0)      ; Saves images of proxy objects into drawing
 )
+(defun-q MYSTARTUP
+    (command "._UNDEFINE" "PLOT")
+    (command "._UNDEFINE" "LL")
+    (command "._INSERT" "*Acad" "0,0,0" "" "")
+)
+
+(setq S::STARTUP (append S::STARTUP MYSTARTUP))
  
 (load "PLTSTAMP")
-(setvar "ATTDIA" 1)
-(setvar "ATTMODE" 1)
-(setvar "UCSICON" 0)
-	 (SETVAR "PROXYGRAPHICS" 0)
-	 
+
 ;; DEFINED FUNCTIONS:
 (defun C:AC   () (if (null C:ACRES)     (load "ACRES"))     (C:ACRES)    (princ))
 (defun C:BI   () (if (null C:BLKINFO)   (load "BLKINFO"))   (C:BLKINFO)  (princ))
@@ -60,7 +99,6 @@
 (defun C:PB   () (if (null C:NESTEDPROBE)    (load "NESTEDPROBE"))    (C:PB)   (princ))
 (defun C:SSS  () (if (null C:SUPERQUICKSAVE)    (load "SUPERQUICKSAVE"))    (C:SSS)   (princ))
 (defun C:XAL  () (if (null C:XREFATTACHATLAYER)   (load "XREFATTACHATLAYER"))   (C:XAL)  (princ))
-
 
 (PRINC)
 
