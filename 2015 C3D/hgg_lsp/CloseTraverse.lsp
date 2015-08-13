@@ -15,13 +15,23 @@
 ;;; Revisions:
 ;;;
 ;;; Code:
-(defun c:CLOSETRAVERSE (/ i n x y ss)
+(defun C:CALCERROR (/ _values _error)
+  ; loop through list and add up values
+  ; return error
+)
+
+(defun C:CLOSETRAVERSE (/ i departs lats ss ss_count ss_entity x y)
   (if (setq ss (ssget '((0 . "AECC_COGO_POINT")))) ; If selection not empty
     (progn ; then
       (setq i 0
-            n (sslength)
+            ss_count (sslength)
       )
-      (while (< i n)
+      (while (< i ss_count)
+             (setq ss_entity (ssname ss i)
+                   ; x = point x
+                   ; y = point y
+                   i (1+ i)
+             )
       )
   )
 )
