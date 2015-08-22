@@ -4,7 +4,7 @@
 ;;;
 ;;; Author: Szabolcs Pasztor <szabolcs1992@gmail.com>
 ;;; Created: 05 July 2015
-;;; Modified: 26 July 2015
+;;; Modified: 22 August 2015
 ;;; Version: 1.0.1
 ;;; Keywords: acad, load, setup, lsp
 ;;;
@@ -17,20 +17,18 @@
 ;;;             - Set the variables found in "_Load_Variables" to ensure similar work-flow:
 ;;;
 ;;; To Do:
-;;;     (S.P. @ 07-05-2015)         Create a function for initial loading (defun SETUP)
-;;;     (S.P. @ 07-05-2015)         Clean up unnecessary / legacy code.
-;;;     (S.P. @ 07-05-2015)         Add finished custom functions to auto load.
-;;;     (S.P. @ 07-05-2015)         Cross check aliases that are changed and set.
 ;;;
 ;;; Revisions:
 ;;;     1.0.1 (S.P. @ 07-05-2015)   Added Documentation and cross checked all calls.
 ;;;     1.0.1 (S.P. @ 07-26-2015)   Defined MYSTARTUP for initial loading.
 ;;;     1.0.1 (S.P. @ 08-16-2015)   Finished _Load_Variables
+;;;     1.0.1 (S.P. @ 08-22-2015)   Finished TODO items.
 ;;;
 ;;; Code:
 
 (defun C:_Load_Variables (/ i)
-  "Sets all of the default AutoCAD system variables."
+  "Sets all of the default AutoCAD system variables and prompts an error if one or more ~
+   variables were not set."
   (let _acad_vars '(
     ("FONTALT" "LER.SHX")    ; Add Leroy as alternative font.
     ("INDEXCTL" 3)           ; Layer and spatial indexes are created.
@@ -71,49 +69,76 @@
         )
       )
     )
+  (if (/= _variables_set (length acad_vars))
+    (prompt "Some system variables were set improperly. ~
+             Contact your AutoCAD administrator for help.")
   )
 
 (defun C:_Load_Functions
+  "Sets all of the custom AutoCAD Functions and prompts an error for a function if the function ~
+   was unable to be loaded."
+
+  ;; DISCONTINUED CODE (I believe not implemented in support path):
+  ;;(defun C:AC   () (if (null C:ACRES)     (load "ACRES"))     (C:ACRES)    (princ))
+  ;;(defun C:BI   () (if (null C:BLKINFO)   (load "BLKINFO"))   (C:BLKINFO)  (princ))
+  ;;(defun C:CR   () (if (null C:COPYROT)   (load "COPYROT"))   (C:COPYROT)  (princ))
+  ;;(defun C:CT   () (if (null C:CURVETIC)  (load "CURVETIC"))  (C:CURVETIC) (princ))
+  ;;(defun C:F180 () (if (null C:FLIP180)   (load "FLIP180"))   (C:FLIP180)  (princ))
+  ;;(defun C:F270 () (if (null C:FLIP270)   (load "FLIP270"))   (C:FLIP270)  (princ))
+  ;;(defun C:F45  ()  (if (null C:FLIP45)   (load "FLIP45"))    (C:FLIP45)   (princ))
+  ;;(defun C:F90  () (if (null C:FLIP90)    (load "FLIP90"))    (C:FLIP90)   (princ))
+  ;;(defun C:FF   () (if (null C:FFILLET)   (load "FFILLET"))   (C:FFILLET)  (princ))
+  ;;(defun C:FL   () (if (null C:FLATTEN)   (load "FLATTEN"))   (C:FLATTEN)  (princ))
+  ;;(defun C:LM   () (if (null C:LMAKE)     (load "LMAKE"))     (C:LMAKE)    (princ))
+  ;;(defun C:MVS  () (if (null C:MVSETUP)   (load "MVSETUP"))   (C:MVSETUP)  (princ))
+  ;;(defun C:NR   () (if (null C:NUMBER)    (load "NUMBER"))    (C:NUMBER)   (princ))
+  ;;(defun C:PD   () (if (null C:PLUD)      (load "PLUD"))      (C:PLUD)     (princ))
+  ;;(defun C:PRO   () (if (null C:PROFILES)   (load "PROFILES"))   (C:PROFILES)  (princ))
+  ;;(defun C:SN   () (if (null C:STATION)   (load "STATION"))   (C:STATION)  (princ))
+  ;;(defun C:TF   () (if (null C:TEXTFLIP)  (load "TEXTFLIP"))  (C:TEXTFLIP) (princ))
+  ;;(defun C:TI   () (if (null C:TEXTINC)   (load "TEXTINC"))   (C:TEXTINC)  (princ))
+  ;;(defun C:TL   () (if (null C:TLINE)     (load "TLINE"))     (C:TLINE)    (princ))
+  ;;(defun C:TRN  () (if (null C:TEXTRND)   (load "TEXTRND"))   (C:TEXTRND)  (princ))
+  ;;(command "._UNDEFINE" "PLOT")
+  ;;(command "._UNDEFINE" "LL")
+  ;;(command "._INSERT" "*Acad" "0,0,0" "" "")
+  (let acad_funcs '(
+                    ;; Functions to add before project deployment:
+                    ;; - PLTSTAMP
+                    ;; - CLOSETRAVERSE
+                    ;; - CONVERTLAYERSETFILE
+                    ;; - QTOTAL
+                    ("CLEAN" C:CNN)
+                    ("NESTEDPROBE" C:PB)
+                    ("SUPERQUICKSAVE" C:SSS)
+                    ("XREFATTACHATLAYER" C:XAL)
+                    ("TRANSFERELEVATIONS" C:TRANSFERELEVATIONS)
+                    ("EXPORTELEVATIONS" C:EXPORTELEVATIONS)
+                    ("IMPORTELEVATIONS" C:IMPORTELEVATIONS)
+                    )
+    )
+
+  (loop for i in acad_funcs
+    (progn
+      (defun (cdr (assoc i)) ()
+        (if (null (cdr (assoc i)))
+          (load i)
+          (prompt (concatenate 'string "Function " i
+                               " unable to load. Contact your AutoCAD administrator for help.")
+                  )
+          )
+        (cdr (assoc i))
+        )
+      )
+    )
   )
+
 (defun-q MYSTARTUP
     "Startup function to be appended to S::STARTUP."
 
     (_Load_Variables)
     (_Load_Functions)
-    (command "._UNDEFINE" "PLOT")
-    (command "._UNDEFINE" "LL")
-    (command "._INSERT" "*Acad" "0,0,0" "" "")
   )
 
 (setq S::STARTUP (append S::STARTUP MYSTARTUP))
  
-(load "PLTSTAMP")
-
-;; DEFINED FUNCTIONS:
-(defun C:AC   () (if (null C:ACRES)     (load "ACRES"))     (C:ACRES)    (princ))
-(defun C:BI   () (if (null C:BLKINFO)   (load "BLKINFO"))   (C:BLKINFO)  (princ))
-(defun C:CR   () (if (null C:COPYROT)   (load "COPYROT"))   (C:COPYROT)  (princ))
-(defun C:CT   () (if (null C:CURVETIC)  (load "CURVETIC"))  (C:CURVETIC) (princ))
-(defun C:F180 () (if (null C:FLIP180)   (load "FLIP180"))   (C:FLIP180)  (princ))
-(defun C:F270 () (if (null C:FLIP270)   (load "FLIP270"))   (C:FLIP270)  (princ))
-(defun C:F45  ()  (if (null C:FLIP45)   (load "FLIP45"))    (C:FLIP45)   (princ))
-(defun C:F90  () (if (null C:FLIP90)    (load "FLIP90"))    (C:FLIP90)   (princ))
-(defun C:FF   () (if (null C:FFILLET)   (load "FFILLET"))   (C:FFILLET)  (princ))
-(defun C:FL   () (if (null C:FLATTEN)   (load "FLATTEN"))   (C:FLATTEN)  (princ))
-(defun C:LM   () (if (null C:LMAKE)     (load "LMAKE"))     (C:LMAKE)    (princ))
-(defun C:MVS  () (if (null C:MVSETUP)   (load "MVSETUP"))   (C:MVSETUP)  (princ))
-(defun C:NR   () (if (null C:NUMBER)    (load "NUMBER"))    (C:NUMBER)   (princ))
-(defun C:PD   () (if (null C:PLUD)      (load "PLUD"))      (C:PLUD)     (princ))
-(defun C:PRO   () (if (null C:PROFILES)   (load "PROFILES"))   (C:PROFILES)  (princ))
-(defun C:QT   () (if (null C:QTOTAL)    (load "QTOTAL"))    (C:QTOTAL)   (princ))
-(defun C:SN   () (if (null C:STATION)   (load "STATION"))   (C:STATION)  (princ))
-(defun C:TF   () (if (null C:TEXTFLIP)  (load "TEXTFLIP"))  (C:TEXTFLIP) (princ))
-(defun C:TI   () (if (null C:TEXTINC)   (load "TEXTINC"))   (C:TEXTINC)  (princ))
-(defun C:TL   () (if (null C:TLINE)     (load "TLINE"))     (C:TLINE)    (princ))
-(defun C:TRN  () (if (null C:TEXTRND)   (load "TEXTRND"))   (C:TEXTRND)  (princ))
-
-;; HGG DEFINED FUNCTIONS:
-(defun C:CNN   () (if (null C:CLEAN)     (load "CLEAN"))     (C:CNN)    (princ))
-(defun C:PB   () (if (null C:NESTEDPROBE)    (load "NESTEDPROBE"))    (C:PB)   (princ))
-(defun C:SSS  () (if (null C:SUPERQUICKSAVE)    (load "SUPERQUICKSAVE"))    (C:SSS)   (princ))
-(defun C:XAL  () (if (null C:XREFATTACHATLAYER)   (load "XREFATTACHATLAYER"))   (C:XAL)  (princ))
