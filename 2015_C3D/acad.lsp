@@ -72,6 +72,7 @@
   (if (/= _variables_set (length acad_vars))
     (prompt "Some system variables were set improperly. ~
              Contact your AutoCAD administrator for help.")
+    )
   )
 
 (defun C:_Load_Functions
