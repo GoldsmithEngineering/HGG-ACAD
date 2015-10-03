@@ -21,55 +21,59 @@
 ;;;
 ;;; Code:
 
-(defun C:CONVERTLAYERSETFILE (file file_list line_number las_file bad_layers layer_state)
+(defun C:CONVERTLAYERSETFILE ( / file_list default_filename)
   "Processes multiple files for conversion."
 
   (init 1 "y" "n")
-  (set ans (getkword "/nCreate files in respective directories? (y n)"))
+  (set ans (getkword "/nCreate files in respective directories? [Y]es [N]o:"))
   (setq default_filename (eq ans "y"))
-  (if (setq file_list (LM:GETFILES "Layerset files to convert" "" "ls3"))
-    (foreach file file_list
-       (if (setq ls3_file (open file "r"))
-         (progn
-           (print (concatenate "\nLS3 File \"" file "\" loaded."))
-           (if default_filename
-             (setq las_filename (vl-string-subst "las" "ls3" file))
-             (setq las_filename (getfiled "Specify location to save layer state" "" "las" 0))
-             )
-           (if (setq las_file (open las_filename "w"))
-             (progn
-               (while (setq line (read-line ls3_file))
-                 (if (setq new_line (C:PARSELAYERSETLINE line))
-                   ;; write new_line to las_file
-                   ;;   else:
-                   ;;     print error
-                   ;;     add layer_state to bad_layers
-                   )
-                 )
-               (close ls3_file)
-               (close las_file)
-               ;; prompt: file converted w/ bad_layers if needed.
-               )
-             (print (print (concatenate "\nWARNING: Error creating \"" las_filename "\"."))); replace with generic *error
-             )
-           )
-         (print (print (concatenate "\nWARNING: Error reading \"" file "\"."))); replace with generic *error
-         )
+  (setq file_list (LM:GETFILES "Layerset files to convert" "" "ls3"))
+  (_PROCESS_FILES file_list default_filename)
+  )
+
+(defun _PROCESS_FILES (file_list default_filename / ls3_file las_filename las_file)
+  "Recursively iterates through the files specified to process."
+  (if (and (/= file_list nil) (setq ls3_file (open (car file_list) "r")a)); Consider using cond to split up statements and allow for output upon sucess
+    (progn
+      (print (concatenate "\nLS3 File \"" file "\" loaded."))
+      (if default_filename
+        (setq las_filename (vl-string-subst "las" "ls3" file))
+        (setq las_filename (getfiled "Specify location to save layer state file:" "" "las" 0))
+        )
+      (if (setq las_file (open las_filename "w"))
+        (progn
+          (_PROCESS_LS3FILE (ls3_file las_file))
+          (close ls3_file)
+          (close las_file)
+          (print (concatenate "\n" las_filename" " created.")
+          )
+        (print (print (concatenate "\nWARNING: Error creating \"" las_filename "\"."))); replace with generic *error
+        )
       )
+    (print (print (concatenate "\nWARNING: Error reading \"" file "\"."))); replace with generic *error
+    (PROCESS_FILES (cdr file_list) default_filename); Recursive call
     )
   )
 
-(defun C:PARSELAYERSETLINE (line)
-  "Takes in a line of a layer set file and parses it to a layer_state list or returns nill if ~
-   line does not match form."
-   ;; if line starts with ';'
-   ;; (c:processheader line)
-   ;; else
-   ;; split up strings with delimitter ';'
-   ;; and setup layer state string appropriately
+(defun _PROCESS_LS3FILE (ls3_file las_file / line)
+  "Recursively iterates through the lines in the LS3 File to process."
+  (if (setq line (read-line ls3_file))
+    (progn
+      ;; if line starts with ';'
+      ;; (c:processheader line)
+      ;; else
+      ;; split up strings with delimitter ';'
+      ;; and setup layer state string appropriately
+      ;; write new_line to las_file
+      ;;   else:
+      ;;     print error
+      ;;     add layer_state to bad_layers
+      )
+    ;; prompt: file converted w/ bad_layers if needed.
+    )
   )
 
-(defun C:PROCESSHEADER ()
+(defun _PROCESSHEADER ()
   "Setup las_file to match ls3 properties (Like Author and Description)"
   ;; split up strings with delimitter ';'
   ;; and setup layer state properties appropriately
