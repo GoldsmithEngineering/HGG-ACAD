@@ -1,0 +1,12 @@
+Notes regarding layerstate and ls3 string formatting:
+
+LS3 Format:
+delimitter = '<'
+
+First line:
+
+[Description]>[Author]>[unkown]
+rest of the lines:
+[layer_name]>[plot_setting]>[color_name]>[unkown]>[plot_color]>[transperancy]
+
+LAS Format:
