@@ -33,11 +33,11 @@
 
 (defun _PROCESS_FILES (file_list default_filename / ls3_file las_filename las_file)
   "Recursively iterates through the files specified to process."
-  (if (and (/= file_list nil) (setq ls3_file (open (car file_list) "r")a)); Consider using cond to split up statements and allow for output upon sucess
+  (if (and (/= file_list nil) (setq ls3_file (open (car file_list) "r")a)); Consider using cond to split up statements and allow for output upon success
     (progn
-      (print (concatenate "\nLS3 File \"" file "\" loaded."))
+      (print (concatenate "\nLS3 File \"" ls3_file "\" loaded."))
       (if default_filename
-        (setq las_filename (vl-string-subst "las" "ls3" file))
+        (setq las_filename (vl-string-subst "las" "ls3" ls3_file))
         (setq las_filename (getfiled "Specify location to save layer state file:" "" "las" 0))
         )
       (if (setq las_file (open las_filename "w"))
@@ -50,17 +50,28 @@
         (print (print (concatenate "\nWARNING: Error creating \"" las_filename "\"."))); replace with generic *error
         )
       )
-    (print (print (concatenate "\nWARNING: Error reading \"" file "\"."))); replace with generic *error
+    (print (print (concatenate "\nWARNING: Error reading \"" ls3_file "\"."))); replace with generic *error
     (PROCESS_FILES (cdr file_list) default_filename); Recursive call
     )
   )
 
-(defun _PROCESS_LS3FILE (ls3_file las_file / line)
+(defun _PROCESS_LS3FILE (ls3_file las_file / line parsed_string)
   "Recursively iterates through the lines in the LS3 File to process."
   (if (setq line (read-line ls3_file))
     (progn
       ;; if line starts with ';'
-      ;; (c:processheader line)
+      (if (vl-string-search ";" line)
+        (progn ;then
+          (write-line "0/nLAYERSTATEDICTIONARY/n0/nLAYERSTATE/n1/n" las_file)
+          (vl-string-trim ";" line)
+          (setq parsed_string (substr line 1 (vl-string-position (ascii ";") line)))
+          (write-line (concatenate parsed_string "\n" las_file))
+          )
+        (progn ;else
+          (setq parsed_string (substr line 1 (vl-string-position (ascii ";") line)))
+          (write-line (concatenate parsed_string "\n" las_file))
+          )
+        )
       ;; else
       ;; split up strings with delimitter ';'
       ;; and setup layer state string appropriately
@@ -73,8 +84,8 @@
     )
   )
 
-(defun _PROCESSHEADER ()
-  "Setup las_file to match ls3 properties (Like Author and Description)"
+(defun _READ_TO_DELIMITER (str delimiter)
+  "Returns the string up to delimiter and returns string after delimiter."
   ;; split up strings with delimitter ';'
   ;; and setup layer state properties appropriately
   )
