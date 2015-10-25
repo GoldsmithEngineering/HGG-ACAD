@@ -55,7 +55,7 @@
     )
   )
 
-(defun _PROCESS_LS3FILE (ls3_file las_file / line parsed_string)
+(defun _PROCESS_LS3FILE (ls3_file las_file / line layer_state)
   "Recursively iterates through the lines in the LS3 File to process."
   (if (setq line (read-line ls3_file))
     (progn
@@ -68,8 +68,25 @@
           (write-line (concatenate parsed_string "\n" las_file))
           )
         (progn ;else
-          (setq parsed_string (substr line 1 (vl-string-position (ascii ";") line)))
-          (write-line (concatenate parsed_string "\n" las_file))
+          (while (equal (read line) "/n")
+            (cons (_READ_TO_DELIMITER line ";") layer_state)
+            ;; layer_state is a list that has the following format:
+            ;;    layer_state[0] = Layer name
+            ;;    layer_state[1] = Layer state as bit where bits are as follows:
+            ;;                      1 = Is Frozen
+            ;;                      2 = VPDFLT (I think its is New VP Frozen)
+            ;;                      4 = Is Locked
+            ;;                      8 = Unused
+            ;;                      16 = Is Xref Dependent
+            ;;                      32 = Unused
+            ;;                      64 = Is Plottable
+            ;;                      128 = Is VP Frozen
+            ;;    layer_state[2] = Color of layer * -1 if layer is off.
+            ;;    layer_state[3] = Linetytpe
+            ;;    layer_state[4] = Line Weight
+            ;;    layer_state[5] = Plot Style
+            ;;    layer_state[6] = Transperancy
+            ;;    layer_state[7] = Is Current Layer (4 if it is, 0 if not)k
           )
         )
       ;; else
@@ -84,9 +101,11 @@
     )
   )
 
-(defun _READ_TO_DELIMITER (str delimiter)
-  "Returns the string up to delimiter and returns string after delimiter."
-  ;; split up strings with delimitter ';'
-  ;; and setup layer state properties appropriately
+(defun _READ_TO_DELIMITER (raw_string delimiter / parsed_string delimiter_position)
+  "Returns the string up to delimiter and removes it from raw_string."
+  (setq delimiter_position (vl-string-position (ascii delimiter) raw_string))
+  (setq parsed_string (substr raw_string 1 delimiter_position))
+  (setq raw_string (substr raw_string (+ 2 delimiter_position) (strlen raw_string)))
+  (parsed_string)
   )
  
