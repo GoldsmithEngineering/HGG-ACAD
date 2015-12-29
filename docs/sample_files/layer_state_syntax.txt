@@ -6,7 +6,7 @@ LAYERSTATE
 [Layer State Name]
 91
 2047
-302
+301
 [Layer State Description]
 290
 1
@@ -33,4 +33,4 @@ LAYERSTATE
 2
 [Plot Style]
 440
-[Transperancy with some weird whacky funk numbering bussiness]
+[Transperancy with some weird whacky funk numbering business]

@@ -1,0 +1,126 @@
+  0
+LAYERSTATEDICTIONARY
+  0
+LAYERSTATE
+  1
+TEST LAYERSTATE
+ 91
+2047
+301
+TEST DESCRIPTION
+290
+1
+302
+vplinetypedashed2
+  8
+vpcolor2
+ 90
+0
+ 62
+2
+370
+-3
+  6
+Continuous
+  2
+Color_7
+440
+0
+  8
+vpdescription
+ 90
+0
+ 62
+7
+370
+-3
+  6
+Continuous
+  2
+Color_7
+440
+0
+  8
+vplinetypedashed2
+ 90
+0
+ 62
+7
+370
+-3
+  6
+DASHED2
+  2
+Color_7
+440
+0
+  8
+vplineweight211
+ 90
+0
+ 62
+7
+370
+211
+  6
+Continuous
+  2
+Color_7
+440
+0
+  8
+vptransperancy45
+ 90
+0
+ 62
+7
+370
+-3
+  6
+Continuous
+  2
+Color_7
+440
+33554572
+  8
+vpfrozen
+ 90
+32
+ 62
+7
+370
+-3
+  6
+Continuous
+  2
+Color_7
+440
+0
+  8
+newvpfrozen
+ 90
+16
+ 62
+7
+370
+-3
+  6
+Continuous
+  2
+Color_7
+440
+0
+  8
+0
+ 90
+8
+ 62
+7
+370
+-3
+  6
+Continuous
+  2
+Color_7
+440
+0

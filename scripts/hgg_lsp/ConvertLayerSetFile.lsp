@@ -31,7 +31,8 @@
 
 (defun _PROCESS_FILES (file_list default_filename / ls3_file las_filename las_file)
   "Recursively iterates through the files specified to process."
-  (if (and (/= file_list nil) (setq ls3_file (open (car file_list) "r")a)); Consider using cond to split up statements and allow for output upon success
+  ; Consider using cond to split up statements and allow for output upon success
+  (if (and (/= file_list nil) (setq ls3_file (open (car file_list) "r")a))
     (progn
       (print (concatenate "\nLS3 File \"" ls3_file "\" loaded."))
       (if default_filename
@@ -45,17 +46,19 @@
           (close las_file)
           (print (concatenate "\n" las_filename " created."))
           )
-        (print (print (concatenate "\nWARNING: Error creating \"" las_filename "\"."))); replace with generic *error
+        ; replace with generic *error:
+        (print (print (concatenate "\nWARNING: Error creating \"" las_filename "\".")))
         )
       )
-    (print (print (concatenate "\nWARNING: Error reading \"" ls3_file "\"."))); replace with generic *error
+    ; replace with generic *error:
+    (print (print (concatenate "\nWARNING: Error reading \"" ls3_file "\".")))
     (PROCESS_FILES (cdr file_list) default_filename); Recursive call
     )
   )
 
-(defun _PROCESS_LS3FILE (ls3_file las_file / line layer_state)
+(defun _PROCESS_LS3FILE (ls3_file las_file / line layers layer_state)
   "Recursively iterates through the lines in the LS3 File to process."
-  (if (setq line (read-line ls3_file))
+  (while (setq line (read-line ls3_file))
     (progn
       ; Are we on the first line?
       (if (equal (vl-string-elt line 0) (ascii ";"))
@@ -67,7 +70,7 @@
 
           ; Parse ls3 description and use as las name. 09 = HT or tab in ascii
           (write-line (strcat (_READ_TO_DELIMITER line 09) "\n") las_file)
-          (write-line "91\n2047\n302\n" las_file)
+          (write-line "91\n2047\n301\n" las_file)
           ; Parse ls3 author and use as las description.
           (write-line (strcat "Author: "(_READ_TO_DELIMITER line 09) "\n") las_file)
           (write-line "290\n1\n302\n" las_file)
@@ -75,39 +78,57 @@
 
         ; else:
         (progn
-          (while (not (equal line "/n"))
-            (append layer_state (_READ_TO_DELIMITER line 09))
-            (if(_PRINT_LAYER_STATE layer_state); if success.
-                (_PRINT_LAYER_STATE layer_state); then
-                (print (strcat "Error in processing layer: " (car layer_state)))
+          (setq layer_state _PARSE_LAYER_STATE(line)
+          ; Is the layer state the current layer?
+            (if (equal (last layer_state) 1)
+               (cons layer_state layers)
+               (append layers layer_state)
               )
             )
-          )
-        )
+          ); else
+        ); if
       )
-      (_PROCESS_LS3FILE ls3_file las_file)
     )
+  (write-line (strcat (car (car layers)) "\n")); write current layer.
+  (foreach layer layers
+    ; Create a list of layer_state's with #1 being the current layer.
+    (if(_PRINT_LAYER_STATE layer); if success.
+        (_PRINT_LAYER_STATE layer); then
+        (print (strcat "Error in processing layer: " (car layer)))
+      )
+    )
+  )
+
+(defun _PARSE_LAYER_STATE (raw_string / layer_state)
+  """
+  Creates a layer state with a specific structure from a parsed ls3 line.
+
+  The structure is as follows:
+    layer_state[0] = Layer name
+    layer_state[1] = Layer state as bit where bits are as follows:
+                      1 = Is Frozen
+                      2 = Is New VP Frozen
+                      4 = Is Locked
+                      8 = Unused
+                      16 = Is Xref Dependent
+                      32 = Unused
+                      64 = Is Plottable
+                      128 = Is VP Frozen
+    layer_state[2] = Color of layer * -1 if layer is off.
+    layer_state[3] = Linetytpe
+    layer_state[4] = Line Weight
+    layer_state[5] = Plot Style
+    layer_state[6] = Transperancy
+    layer_state[7] = Is Current Layer (1 if it is, 0 if not)k
+  """
+  (while (not (equal raw_string "\n"))
+    (append layer_state (_READ_TO_DELIMITER line 09))
+    )
+  (layer_state)
   )
 
 (defun _PRINT_LAYER_STATE (layer_state)
   "Prints a layer state to the autocad format with the appriopriate '\n's. Returns nil on error"
-  ;; layer_state is a list that has the following format:
-  ;;    layer_state[0] = Layer name
-  ;;    layer_state[1] = Layer state as bit where bits are as follows:
-  ;;                      1 = Is Frozen
-  ;;                      2 = VPDFLT (I think its is New VP Frozen)
-  ;;                      4 = Is Locked
-  ;;                      8 = Unused
-  ;;                      16 = Is Xref Dependent
-  ;;                      32 = Unused
-  ;;                      64 = Is Plottable
-  ;;                      128 = Is VP Frozen
-  ;;    layer_state[2] = Color of layer * -1 if layer is off.
-  ;;    layer_state[3] = Linetytpe
-  ;;    layer_state[4] = Line Weight
-  ;;    layer_state[5] = Plot Style
-  ;;    layer_state[6] = Transperancy
-  ;;    layer_state[7] = Is Current Layer (4 if it is, 0 if not)k
   )
 
 (defun _READ_TO_DELIMITER (raw_string delimiter_character_code / parsed_string delimiter_position)
@@ -117,4 +138,3 @@
   (setq raw_string (substr raw_string (+ 2 delimiter_position) (strlen raw_string)))
   (parsed_string)
   )
- 

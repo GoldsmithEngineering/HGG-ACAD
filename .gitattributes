@@ -24,3 +24,5 @@
 # Folders:
 docs export-ignore
 
+# Language
+*.rb linguist-language=Lisp
