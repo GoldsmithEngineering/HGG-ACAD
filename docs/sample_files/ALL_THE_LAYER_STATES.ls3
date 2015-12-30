@@ -1,9 +1,12 @@
-;TEST DECRIPTION	TEST CREATOR	4
+;Test Description	Test Creator	4
 0	64	7	Continuous	-3	Color_7	0
 newvpfrozen	2	7	Continuous	-3	Color_7	0
-vpfrozen	0	7	Continuous	-3	Color_7	0
+vpfrozen	128	7	Continuous	-3	Color_7	0
 vptransperancy45	0	7	Continuous	-3	Color_7	0
 vplineweight211	0	7	Continuous	-3	Color_7	0
-vplinetypedashed2	0	7	Continuous	-3	Color_7	1
+vplinetypedashed2	0	7	Continuous	-3	Color_7	0
 vpdescription	0	7	Continuous	-3	Color_7	0
 vpcolor2	0	7	Continuous	-3	Color_7	0
+CurrentLayer	64	7	Continuous	-3	Color_7	1
+vptransperancy90	0	7	Continuous	-3	Color_7	0
+vptransperancy0	0	7	Continuous	-3	Color_7	0

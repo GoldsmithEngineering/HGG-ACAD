@@ -19,6 +19,9 @@
 ;;;
 ;;; Code:
 
+;;; ---------------------------------------------------------------------------
+;;; Function(s):
+;;; ---------------------------------------------------------------------------
 (defun C:CONVERTLAYERSETFILE ( / file_list default_filename)
   "Processes multiple files for conversion."
 
@@ -29,6 +32,9 @@
   (_PROCESS_FILES file_list default_filename)
   )
 
+;;; ---------------------------------------------------------------------------
+;;; Sub Function(s):
+;;; ---------------------------------------------------------------------------
 (defun _PROCESS_FILES (file_list default_filename / ls3_file las_filename las_file)
   "Recursively iterates through the files specified to process."
   ; Consider using cond to split up statements and allow for output upon success
@@ -99,7 +105,7 @@
     )
   )
 
-(defun _PARSE_LAYER_STATE (raw_string / layer_state)
+(defun _LS3_STATE_PARSE_STRING (raw_string / ls3_state)
   """
   Creates a layer state with a specific structure from a parsed ls3 line.
 
@@ -109,28 +115,88 @@
                       1 = Is Frozen
                       2 = Is New VP Frozen
                       4 = Is Locked
-                      8 = Unused
+                      8 = N/A
                       16 = Is Xref Dependent
-                      32 = Unused
+                      32 = N/A
                       64 = Is Plottable
                       128 = Is VP Frozen
     layer_state[2] = Color of layer * -1 if layer is off.
-    layer_state[3] = Linetytpe
+    layer_state[3] = Linetype
     layer_state[4] = Line Weight
     layer_state[5] = Plot Style
-    layer_state[6] = Transperancy
-    layer_state[7] = Is Current Layer (1 if it is, 0 if not)k
+    layer_state[6] = Is Current Layer (1 if it is, 0 if not)k
+    layer_state[7] = Error Code as follows:
+                       0 = No Error
+                       1 = Invalid amount size (# of states) for Layer State
+                       2 = Bad value for a state (i.e. color > 255)
   """
   (while (not (equal raw_string "\n"))
-    (append layer_state (_READ_TO_DELIMITER line 09))
+    (append ls3_state (_READ_TO_DELIMITER line 09))
     )
-  (layer_state)
+  (ls3_state)
   )
 
-(defun _PRINT_LAYER_STATE (layer_state)
+(defun _LS3_STATE_CHECK_FOR_ERROR (ls3_state / has_error )
+  )
+(defun _LAS_STATE_FROM_LS3 (ls3_state)
+  """
+  Converts a ls3 type layer state to a LAS type layer state.
+
+  The LAS type layer state has the following structure:
+    ls3_state[0] = Layer Name as a string.
+    ls3_state[1] = Layer state as bits where bits are as follows:
+                    1 = Is Off
+                    2 = Is Frozen
+                    4 = Is Locked
+                    8 = Is Plottable
+                    16 = Is New VP Frozen
+                    32 = Is Vp Frozen
+                    64 = N/A
+                    128 = N/A
+    ls3_state[2] = Color of layer (1 - 255)
+    ls3_state[3] = Line weight in 100's of mm, i.e. 211 = 2.11mm
+    ls3_state[4] = Line Type as a string.
+    ls3_state[5] = Plot Style
+    ls3_state[6] = Transperancy
+    ls3_state[7] = Error Flag
+  """
+  (append
+    (car ls3_state)
+    (or; Bitwise math:
+        (> (nth 2 ls3_state) 0)
+        (lsh (and ls3_state 1) 1)
+        (and ls3_state 4)
+        (lsh (and ls3_state 64) -3)
+        (lsh (and ls3_state 2) 3)
+        (lsh (and ls3_state 128) -2)
+      )
+    (abs (nth 2 ls3_state))
+    (nth 4 ls3_state)
+    (nth 3 ls3_state)
+    (nth 5 ls3_state)
+    (last ls3_state)
+    )
+  )
+
+(defun _LAS_STATE_PRINT (ls3_state)
   "Prints a layer state to the autocad format with the appriopriate '\n's. Returns nil on error"
+  (setq n 0)
+  (foreach state ls3_state
+    (progn
+      (cond
+        ((= n 1) (print (strcat "8\n" state)))
+        ((= n 2)
+          (progn
+            )
+        )
+      (setq n (1+ n))
+      )
+    )
   )
 
+;;; ---------------------------------------------------------------------------
+;;; Sub Function(s):
+;;; ---------------------------------------------------------------------------
 (defun _READ_TO_DELIMITER (raw_string delimiter_character_code / parsed_string delimiter_position)
   "Returns the string up to delimiter_code and removes it from raw_string."
   (setq delimiter_position (vl-string-position delimiter_character_code raw_string))

@@ -7,6 +7,6 @@ First line:
 
 [Description]>[Author]>[unkown]
 rest of the lines:
-[layer_name]>[plot_setting]>[color_name]>linetype>lineweight>[plot_color]>[transperancy]
+[layer_name]>[plot_setting]>[color_name]>[line type]>[line weight]>[plot_color]>[current layer]
 
 LAS Format:

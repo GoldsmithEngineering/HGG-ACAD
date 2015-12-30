@@ -11,7 +11,49 @@ TEST DESCRIPTION
 290
 1
 302
-vplinetypedashed2
+CurrentLayer
+  8
+vptransperancy0
+ 90
+0
+ 62
+7
+370
+-3
+  6
+Continuous
+  2
+Color_7
+440
+33554687
+  8
+vptransperancy90
+ 90
+0
+ 62
+7
+370
+-3
+  6
+Continuous
+  2
+Color_7
+440
+33554457
+  8
+CurrentLayer
+ 90
+8
+ 62
+7
+370
+-3
+  6
+Continuous
+  2
+Color_7
+440
+0
   8
 vpcolor2
  90
