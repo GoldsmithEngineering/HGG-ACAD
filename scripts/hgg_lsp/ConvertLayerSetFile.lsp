@@ -1,10 +1,10 @@
 ;;; ConvertLayerSetFile.LSP -- Custom command designed to convert ls3 files into las files.
 ;;
-;;; Copyright (C) 2015, Creative Commons License.
+;;; Copyright (C) 2016, Creative Commons License.
 ;;;
 ;;; Author: Szabolcs Pasztor <szabolcs1992@gmail.com>
 ;;; Created: 22 August 2015
-;;; Modified: 20 December 2015
+;;; Modified: 03 January 2016
 ;;; Version: 1.0.1
 ;;; Keywords: ls3, convert, las, layerset, layerstate
 ;;;
@@ -23,7 +23,9 @@
 ;;; Function(s):
 ;;; ---------------------------------------------------------------------------
 (defun C:CONVERTLAYERSETFILE ( / file_list default_filename)
-  "Processes multiple files for conversion."
+  """This function asks a user through a dialog box to specify which files they want to convert
+ from .ls3 to .las. Then it calls a sub function (_PROCESS_FILES) which iterates through the list
+ of files and converts them appropriately."""
 
   (init 1 "y" "n")
   (set ans (getkword "/nCreate files in respective directories? [Y]es [N]o:"))
@@ -124,20 +126,21 @@
     layer_state[3] = Linetype
     layer_state[4] = Line Weight
     layer_state[5] = Plot Style
-    layer_state[6] = Is Current Layer (1 if it is, 0 if not)k
+    layer_state[6] = Is Current Layer (1 if it is, 0 if not)
     layer_state[7] = Error Code as follows:
                        0 = No Error
                        1 = Invalid amount size (# of states) for Layer State
                        2 = Bad value for a state (i.e. color > 255)
   """
   (while (not (equal raw_string "\n"))
-    (append ls3_state (_READ_TO_DELIMITER line 09))
+    (setq ls3_state (append ls3_state (_READ_TO_DELIMITER raw_stringe 09)))
     )
-  (ls3_state)
+  (_LS3_STATE_CHECK_FOR_ERROR ls3_state)
   )
 
 (defun _LS3_STATE_CHECK_FOR_ERROR (ls3_state / has_error )
   )
+
 (defun _LAS_STATE_FROM_LS3 (ls3_state)
   """
   Converts a ls3 type layer state to a LAS type layer state.
@@ -161,8 +164,8 @@
     ls3_state[7] = Error Flag
   """
   (append
-    (car ls3_state)
-    (or; Bitwise math:
+    (car ls3_state); name
+    (or; Bitwise math for state:
         (> (nth 2 ls3_state) 0)
         (lsh (and ls3_state 1) 1)
         (and ls3_state 4)
@@ -170,11 +173,12 @@
         (lsh (and ls3_state 2) 3)
         (lsh (and ls3_state 128) -2)
       )
-    (abs (nth 2 ls3_state))
-    (nth 4 ls3_state)
-    (nth 3 ls3_state)
-    (nth 5 ls3_state)
-    (last ls3_state)
+    (abs (nth 2 ls3_state)); color
+    (nth 4 ls3_state); line weight
+    (nth 3 ls3_state); line type
+    (nth 5 ls3_state); plot style
+    (33554687); Transperancy assumed to be 0.
+    (last ls3_state); error flag
     )
   )
 
@@ -189,13 +193,14 @@
           (progn
             )
         )
+        )
       (setq n (1+ n))
       )
     )
   )
 
 ;;; ---------------------------------------------------------------------------
-;;; Sub Function(s):
+;;; Helper Function(s):
 ;;; ---------------------------------------------------------------------------
 (defun _READ_TO_DELIMITER (raw_string delimiter_character_code / parsed_string delimiter_position)
   "Returns the string up to delimiter_code and removes it from raw_string."
