@@ -1,5 +1,5 @@
 ;;; ConvertLayerSetFile.LSP -- Custom command designed to convert ls3 files into las files.
-;;
+;;;
 ;;; Copyright (C) 2016, Creative Commons License.
 ;;;
 ;;; Author: Szabolcs Pasztor <szabolcs1992@gmail.com>
@@ -133,12 +133,121 @@
                        2 = Bad value for a state (i.e. color > 255)
   """
   (while (not (equal raw_string "\n"))
-    (setq ls3_state (append ls3_state (_READ_TO_DELIMITER raw_stringe 09)))
+    (setq ls3_state (append ls3_state (_READ_TO_DELIMITER raw_string 09)))
     )
   (_LS3_STATE_CHECK_FOR_ERROR ls3_state)
   )
 
-(defun _LS3_STATE_CHECK_FOR_ERROR (ls3_state / has_error )
+(defun _LS3_STATE_CHECK_FOR_ERROR (ls3_state is_new_state
+                                   / _DEFAULT_STATE _ERR_NO_ERROR _ERR_INVALID_SIZE
+                                   _ERR_BAD_VALUE _STATE_MAX_LENGTH _STATE_BIT_FACTORS
+                                   _STATE_BIT_MAX _STATE_BIT_MIN _STATE_COLOR_MAX _STATE_COLOR_MIN)
+  """
+  Checks to see if the layer_state is valid then respectively sets the error code.
+  
+  The error codes are as follows:
+                       0  = No Error.
+                       1  = Invalid amount size (# of states) for Layer State.
+                       2# = Bad value for a state (i.e. color > 255) with # being the state.
+                       3  = Multiple Errors were found.
+  If an error code > 0 has been found, the states that were found to be corrupt or missing are
+  replaced with the default values.
+  """
+  (setq _DEFAULT_STATE
+    (list
+      ""
+      64
+      7
+      "Continuous"
+      -3
+      "Color_7"
+      0
+      0
+      )
+    )
+  (setq _ERR_NO_ERROR 0)
+  (setq _ERR_INVALID_SIZE 1)
+  (setq _ERR_BAD_VALUE 20)
+  (setq _STATE_MAX_LENGTH 8)
+  (if (= is_new_state 1) (1- _STATE_MAX_LENGTH))
+  (setq _STATE_BIT_FACTORS (1 2 4 16 64 128))
+  (setq _STATE_BIT_MAX (+ _STATE_BIT_FACTORS))
+  (setq _STATE_BIT_MIN 0)
+  (setq _STATE_COLOR_MAX 255)
+  (setq _STATE_COLOR_MIN 0)
+
+  (cond
+    ; If ls3_state length is wrong.
+    ((> (length ls3_state) _STATE_MAX_SIZE)
+      (append
+        (GET_FIRST_N ls3_state _STATE_MAX_SIZE)
+        (_ERR_INVALID_SIZE)
+        )
+      )
+    ((> (length ls3_state) _STATE_MAX_SIZE)
+     (append
+       (ls3_state)
+       (reverse (cdr (GET_FIRST_N
+                       (reverse _LS3_STATE_DEFAULT) (- _STATE_MAX_SIZE (length ls3_state))
+                       )))
+       (_ERR_INVALID_SIZE)
+       )
+     )
+    ; If the state is an invalid state.
+    ((or
+        ; State is a number
+        (numberp (nth 1 ls3_state))
+        ; State is greater than max bit value or less than min bit value
+        (< (nth 1 ls3_state) _STATE_BIT_MIN)
+        (> (nth 1 ls3_state) _STATE_BIT_MAX)
+        ; State is a factor of 1 2 4 16 64 or 128.
+        )
+     (REPLACE_N
+       (append (GET_FIRST_N ls3_state _STATE_MAX_SIZE) (+ _ERR_BAD_VALUE 1))
+       (nth 1 _LS3_STATE_DEFAULT)
+       1
+       )
+     )
+    ; If color of layer invalid.
+    ((or (> (nth 2 ls3_state) _STATE_COLOR_MAX) (< (nth 2 ls3_state) _STATE_COLOR_MIN))
+     (REPLACE_N
+       (append (GET_FIRST_N ls3_state _STATE_MAX_SIZE) (+ _ERR_BAD_VALUE 2))
+       (nth 2 _LS3_STATE_DEFAULT)
+       2
+       )
+     )
+    ; Line Weight is a number
+    ; Line type is empty
+    ((equal (nth 4 ls3_state) "")
+     (REPLACE_N
+       (append (GET_FIRST_N ls3_state _STATE_MAX_SIZE) (+ _ERR_BAD_VALUE 4))
+       (nth 4 _LS3_STATE_DEFAULT)
+       4
+       )
+     )
+    ; Plot style string is in format of Color_###
+    (
+     (or
+       (not (wcmatch (nth 5 ls3_state) "Color_*"))
+       (atoi (vl-string-left-trim "Color_" (nth 5 ls3_state)))
+       (> (atoi (vl-string-left-trim "Color_" (nth 5 ls3_state))) _STATE_COLOR_MAX)
+       (< (atoi (vl-string-left-trim "Color_" (nth 5 ls3_state))) _STATE_COLOR_MIN)
+       )
+     (REPLACE_N
+       (append (GET_FIRST_N ls3_state _STATE_MAX_SIZE) (+ _ERR_BAD_VALUE 5))
+       (nth 5 _LS3_STATE_DEFAULT)
+       5
+       )
+     )
+    ; Current Layer is either 0 or 1
+    ((equal (member (nth 6 ls3_state) '(0 1)) nil)
+     (REPLACE_N
+       (append (GET_FIRST_N ls3_state _STATE_MAX_SIZE) (+ _ERR_BAD_VALUE 6))
+       (nth 6 _LS3_STATE_DEFAULT)
+       6
+       )
+     )
+    )
   )
 
 (defun _LAS_STATE_FROM_LS3 (ls3_state)
@@ -202,6 +311,26 @@
 ;;; ---------------------------------------------------------------------------
 ;;; Helper Function(s):
 ;;; ---------------------------------------------------------------------------
+(defun GET_FIRST_N (lst n_max / n)
+  "Returns the first n_max elements of a list."
+   (setq n -1)
+   (repeat (>= n (- n_max 1))
+     (progn
+       (1+ n)
+       (append (nth n lst))
+       )
+     )
+  )
+
+(defun REPLACE_N (lst new_value nth_element )
+  "Returns a list with the n'th_element replaced with new_value"
+  (append
+    (GET_FIRST_N lst (- nth_element 1))
+    new_value
+    (GET_FIRST_N (reverse lst) (- (length lst) nth_element))
+    )
+  )
+
 (defun _READ_TO_DELIMITER (raw_string delimiter_character_code / parsed_string delimiter_position)
   "Returns the string up to delimiter_code and removes it from raw_string."
   (setq delimiter_position (vl-string-position delimiter_character_code raw_string))
