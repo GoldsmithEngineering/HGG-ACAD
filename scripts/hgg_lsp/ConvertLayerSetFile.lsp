@@ -12,8 +12,12 @@
 ;;;             This allows for compatibility for Goldsmith Engineering from the depreciated
 ;;;             layerset custom program.
 ;;;
-;;; To Do:
-;;; (S.P.) @12-20-2015) - Finish layer_state processing.
+;;; Notes:
+;;; All code follows (https://google.github.io/styleguide/lispguide.xml) for styliziation rules
+;;; and uses [FIND DOCUMENATION TOOL] for creating code documentation.
+;;;
+;;; ToDo:
+;;; (S.P.) @12-20-2015) - Finish layer-state processing.
 ;;;
 ;;; Revisions:
 ;;;
@@ -22,75 +26,150 @@
 ;;; ---------------------------------------------------------------------------
 ;;; Function(s):
 ;;; ---------------------------------------------------------------------------
-(defun C:CONVERTLAYERSETFILE ( / file_list default_filename)
-  """This function asks a user through a dialog box to specify which files they want to convert
- from .ls3 to .las. Then it calls a sub function (_PROCESS_FILES) which iterates through the list
- of files and converts them appropriately."""
-
+(defun HGG:Convert-Ls3-File ( / file-list default-filename)
+  ;; Converts a ls3 file to a las file.
+  ;;
+  ;; This function asks a user through a dialog box to specify which files they want to convert
+  ;; from .ls3 to .las. Then it calls a sub function (HGG:Convert-Ls3-File:Process-Files) which
+  ;; iterates through the list of files and converts them appropriately.
+  ;;
+  ;; Calls:
+  ;;    (HGG:Convert-Ls3-File:Process-Files)
+  ;;    (LM:GETFILES)
+  ;;
+  ;; Local Variables:
+  ;;    (file-list) - The list of ls3 files to process.
+  ;;    (default-filename) - 'nil' if a custom file directory is provided.
+  ;;
+  ;; Returns:
+  ;;    None.
+  ;;
+  ;; ToDo:
+  ;;    (S.P.) @(01-05-16) - Update the behavior of default-filename to act more like a custom-file-dir-p
+  ;;
+  ;; Revisions:
+  ;;
+  ;; Code:
   (init 1 "y" "n")
   (set ans (getkword "/nCreate files in respective directories? [Y]es [N]o:"))
-  (setq default_filename (eq ans "y"))
-  (setq file_list (LM:GETFILES "Layerset files to convert" "" "ls3"))
-  (_PROCESS_FILES file_list default_filename)
+  (setq default-filename (eq ans "y"))
+  (setq file-list (LM:GETFILES "Layerset files to convert" "" "ls3"))
+  (HGG:Convert-Ls3-File:Process-Files file-list default-filename)
   )
 
 ;;; ---------------------------------------------------------------------------
 ;;; Sub Function(s):
 ;;; ---------------------------------------------------------------------------
-(defun _PROCESS_FILES (file_list default_filename / ls3_file las_filename las_file)
-  "Recursively iterates through the files specified to process."
-  ; Consider using cond to split up statements and allow for output upon success
-  (if (and (/= file_list nil) (setq ls3_file (open (car file_list) "r")a))
+(defun HGG:Convert-Ls3-File:Process-Files (file-list default-filename / ls3-file las-filename las-file)
+  ;; Recusively processeses the ls3 files.
+  ;;
+  ;; [Multi-line summary]
+  ;;
+  ;; Calls:
+  ;;    (HGG:Convert-Ls3-File:Process-Files)
+  ;;
+  ;; Parameters:
+  ;;    (file-list) - List of files to convert from ls3 to las
+  ;;    (default-filename) - nil if a custom path is not to be used.
+  ;;
+  ;; Local Variables:
+  ;;    (ls3-file) - The currently loaded *.ls3 file.
+  ;;    (las-filename) - Name of the *.las file to save to.
+  ;;    (las-file) - The currently loaded *.las file.
+  ;;
+  ;; Returns:
+  ;;    None.
+  ;;
+  ;; ToDo:
+  ;;    (S.P.) @(01-05-16) - Update the behavior of default-filename to act more like a
+  ;;                         custom-file-dir-p
+  ;;    (S.P.) @(01-03-16) - Consider using cond to split up statements and allow for output upon
+  ;;                         success
+  ;;
+  ;; Revisions:
+  ;;
+  ;; Code:
+  (if (and (/= file-list nil) (setq ls3-file (open (car file-list) "r")a))
     (progn
-      (print (concatenate "\nLS3 File \"" ls3_file "\" loaded."))
-      (if default_filename
-        (setq las_filename (vl-string-subst "las" "ls3" ls3_file))
-        (setq las_filename (getfiled "Specify location to save layer state file:" "" "las" 0))
+      (print (concatenate "\nLS3 File \"" ls3-file "\" loaded."))
+      (if default-filename
+        (setq las-filename (vl-string-subst "las" "ls3" ls3-file))
+        (setq las-filename (getfiled "Specify location to save layer state file:" "" "las" 0))
         )
-      (if (setq las_file (open las_filename "w"))
+      (if (setq las-file (open las-filename "w"))
         (progn
-          (_PROCESS_LS3FILE (ls3_file las_file))
-          (close ls3_file)
-          (close las_file)
-          (print (concatenate "\n" las_filename " created."))
+          (HGG:Convert-Ls3-File:Process-File (ls3-file las-file))
+          (close ls3-file)
+          (close las-file)
+          (print (concatenate "\n" las-filename " created."))
           )
-        ; replace with generic *error:
-        (print (print (concatenate "\nWARNING: Error creating \"" las_filename "\".")))
+        ;; replace with generic *error:
+        (print (print (concatenate "\nWARNING: Error creating \"" las-filename "\".")))
         )
       )
-    ; replace with generic *error:
-    (print (print (concatenate "\nWARNING: Error reading \"" ls3_file "\".")))
-    (PROCESS_FILES (cdr file_list) default_filename); Recursive call
+    ;; replace with generic *error:
+    (print (print (concatenate "\nWARNING: Error reading \"" ls3-file "\".")))
+    (HGG:Convert-Ls3-File:Process-Files (cdr file-list) default-filename); Recursive call
     )
   )
 
-(defun _PROCESS_LS3FILE (ls3_file las_file / line layers layer_state)
-  "Recursively iterates through the lines in the LS3 File to process."
-  (while (setq line (read-line ls3_file))
+(defun HGG:Convert-Ls3-File:Process-File (ls3-file las-file / line layers layer-state)
+  ;; Recursively iterates through the lines in ls3-file to process.
+  ;;
+  ;; [Multi-line summary]
+  ;;
+  ;; Calls:
+  ;;    (HGG:Convert-Ls3-File:Ls3-State:Parse-string)
+  ;;    (HGG:Convert-Ls3-File:Ls3-State:State-Print)
+  ;;    (HGG:Read-To-Delimiter)
+  ;;
+  ;; Parameters:
+  ;;    (ls3-file) - The *.ls3 file to be read.
+  ;;    (las-file) - The *.las file to be written to.
+  ;;
+  ;; Local Variables:
+  ;;    (line) - The current line being read in ls3-file.
+  ;;    (layers) - A list of all of the layers in the drawing with their corresponing layer-state.
+  ;;    (layer-state) - The layer-state in LAS format. See documentation for function
+  ;;                    HGG:Convert-Ls3-File:Ls3-State:From-Ls3 for format.
+  ;;
+  ;; Returns:
+  ;;    None.
+  ;;
+  ;; ToDo:
+  ;;    (S.P.) @(01-05-16) - Make sure it works!
+  ;;    (S.P.) @(01-05-16) - Make layer-state a LAS type state. Right now it is a LS3 type state
+  ;;                         because it is calling HGG:Convert-Ls3-File:Ls3-State:Parse-string
+  ;;                         which returns a LS3 type state!
+  ;;
+  ;; Revisions:
+  ;;
+  ;; Code:
+  (while (setq line (read-line ls3-file))
     (progn
-      ; Are we on the first line?
+      ;; Are we on the first line?
       (if (equal (vl-string-elt line 0) (ascii ";"))
 
-        ; then:
+        ;; then:
         (progn
-          (write-line "0/nLAYERSTATEDICTIONARY/n0/nLAYERSTATE/n1/n" las_file)
+          (write-line "0/nLAYERSTATEDICTIONARY/n0/nLAYERSTATE/n1/n" las-file)
           (vl-string-trim ";" line)
 
-          ; Parse ls3 description and use as las name. 09 = HT or tab in ascii
-          (write-line (strcat (_READ_TO_DELIMITER line 09) "\n") las_file)
-          (write-line "91\n2047\n301\n" las_file)
-          ; Parse ls3 author and use as las description.
-          (write-line (strcat "Author: "(_READ_TO_DELIMITER line 09) "\n") las_file)
-          (write-line "290\n1\n302\n" las_file)
+          ;; Parse ls3 description and use as las name. 09 = HT or tab in ascii
+          (write-line (strcat (HGG:Read-To-Delimiter line 09) "\n") las-file)
+          (write-line "91\n2047\n301\n" las-file)
+          ;; Parse ls3 author and use as las description.
+          (write-line (strcat "Author: "(HGG:Read-To-Delimiter line 09) "\n") las-file)
+          (write-line "290\n1\n302\n" las-file)
           )
 
-        ; else:
+        ;; else:
         (progn
-          (setq layer_state _PARSE_LAYER_STATE(line)
-          ; Is the layer state the current layer?
-            (if (equal (last layer_state) 1)
-               (cons layer_state layers)
-               (append layers layer_state)
+          (setq layer-state (HGG:Convert-Ls3-File:Ls3-State:Parse-string line))
+          ;; Is the layer state the current layer?
+            (if (equal (last layer-state) 1
+               (cons layer-state layers)
+               (append layers layer-state)
               )
             )
           ); else
@@ -99,52 +178,85 @@
     )
   (write-line (strcat (car (car layers)) "\n")); write current layer.
   (foreach layer layers
-    ; Create a list of layer_state's with #1 being the current layer.
-    (if(_PRINT_LAYER_STATE layer); if success.
-        (_PRINT_LAYER_STATE layer); then
+    ;; Create a list of layer-state's with #1 being the current layer.
+    (if(HGG:Convert-Ls3-File:Ls3-State:State-Print layer); if success.
+        (HGG:Convert-Ls3-File:Ls3-State:State-Print layer); then
         (print (strcat "Error in processing layer: " (car layer)))
       )
     )
   )
 
-(defun _LS3_STATE_PARSE_STRING (raw_string / ls3_state)
-  """
-  Creates a layer state with a specific structure from a parsed ls3 line.
-
-  The structure is as follows:
-    layer_state[0] = Layer name
-    layer_state[1] = Layer state as bit where bits are as follows:
-                      1 = Is Frozen
-                      2 = Is New VP Frozen
-                      4 = Is Locked
-                      8 = N/A
-                      16 = Is Xref Dependent
-                      32 = N/A
-                      64 = Is Plottable
-                      128 = Is VP Frozen
-    layer_state[2] = Color of layer * -1 if layer is off.
-    layer_state[3] = Linetype
-    layer_state[4] = Line Weight
-    layer_state[5] = Plot Style
-    layer_state[6] = Is Current Layer (1 if it is, 0 if not)
-    layer_state[7] = Error Code as follows:
-                       0 = No Error
-                       1 = Invalid amount size (# of states) for Layer State
-                       2 = Bad value for a state (i.e. color > 255)
-  """
-  (while (not (equal raw_string "\n"))
-    (setq ls3_state (append ls3_state (_READ_TO_DELIMITER raw_string 09)))
+(defun HGG:Convert-Ls3-File:Ls3-State:Parse-string (string / ls3-state)
+  ;; Creates a layer state in LS3 format from a parsed strin and returns that layer state.
+  ;;
+  ;; The LS3 format is based upon the format of a layer state in the *.ls3 file. Reverse
+  ;; engineering the format and putting it into a list format yields the below form of a list.
+  ;; Because AutoLISP is a shitty language, the list is being used much like a struct with the
+  ;; location of each member having a very important identiy.
+  ;;
+  ;; The typical structure of string found in a *.ls3 file:
+  ;;
+  ;;
+  ;; The Structure of an ls3-state (see +default-ls3-state+ for default values):
+  ;; (nth 0 ls3-state) :> "Layer name"
+  ;; (nth 1 ls3-state) :> Integer being used for bit representation of states.
+  ;;                      The bits are as follows:
+  ;;                        1 = Is Frozen
+  ;;                        2 = Is New VP Frozen
+  ;;                        4 = Is Locked
+  ;;                        8 = N/A
+  ;;                        16 = Is Xref Dependent
+  ;;                        32 = N/A
+  ;;                        64 = Is Plottable
+  ;;                        128 = Is VP Frozen
+  ;; (nth 2 ls3-state) :> Integer representing color of layer from 1 - 255 and * -1 if the layer
+  ;;                      is off.
+  ;; (nth 3 ls3-state) :> Linetype
+  ;; (nth 4 ls3-state) :> Line Weight
+  ;; (nth 5 ls3-state) :> Plot Style
+  ;; (nth 6 ls3-state) :> Is Current Layer (1 if it is, 0 if not)
+  ;; (nth 7 ls3-state) :> Error Code as follows:
+  ;;                        0 = No Error
+  ;;                        1 = Invalid amount size (# of states) for Layer State
+  ;;                        2 = Bad value for a state (i.e. color > 255) with # being a state
+  ;;                            numbered 0 - 6.
+  ;;                        3 = Multiple states were found to be invalid.
+  ;;                        4 = Unknown error
+  ;;
+  ;; Calls:
+  ;;    (HGG:Convert-Ls3-File:Ls3-State:Check-For-Errors)
+  ;;    (HGG:Read-To-Delimiter)
+  ;;
+  ;; Parameters:
+  ;;    (string) - The string to be parsed representing the layer state.
+  ;;
+  ;; Local Variables:
+  ;;    (ls3-state) - An LS3 type state.
+  ;;
+  ;; Returns:
+  ;;    The layer state in a LAS type format. See HGG:Convert-Ls3-File:Ls3-State:From-Ls3 for more
+  ;;    info.
+  ;;
+  ;; ToDo:
+  ;;
+  ;; Revisions:
+  ;;    (S.P.) @(01-05-16) - For reducing complexity, have this function return the layer state
+  ;;                         in a LS3 type format. Makes it more testable as well.
+  ;;
+  ;; Code:
+  (while (not (equal string "\n"))
+    (setq ls3-state (append ls3-state (HGG:Read-To-Delimiter string 09)))
     )
-  (_LS3_STATE_CHECK_FOR_ERROR ls3_state)
+  (HGG:Convert-Ls3-File:Ls3-State:Check-For-Errors ls3-state)
   )
 
-(defun _LS3_STATE_CHECK_FOR_ERROR (ls3_state is_new_state
-                                   / _DEFAULT_STATE _ERR_NO_ERROR _ERR_INVALID_SIZE
-                                   _ERR_BAD_VALUE _STATE_MAX_LENGTH _STATE_BIT_FACTORS
-                                   _STATE_BIT_MAX _STATE_BIT_MIN _STATE_COLOR_MAX _STATE_COLOR_MIN)
+(defun HGG:Convert-Ls3-File:Ls3-State:Check-For-Errors (ls3-state is_new_state
+                                   / _default-state_ _err.no-error_ _err.invalid-size_
+                                   _err.bad-value_ _state.max-length_ _state.bit-factors_
+                                   _state.bit-max_ _state.bit-min_ _state.color-max_ _state.color-min_)
   """
-  Checks to see if the layer_state is valid then respectively sets the error code.
-  
+  Checks to see if the layer-state is valid then respectively sets the error code.
+
   The error codes are as follows:
                        0  = No Error.
                        1  = Invalid amount size (# of states) for Layer State.
@@ -153,7 +265,37 @@
   If an error code > 0 has been found, the states that were found to be corrupt or missing are
   replaced with the default values.
   """
-  (setq _DEFAULT_STATE
+  ;; Validates a LAS type later-state and sets the error code on the returned las-state.
+  ;;
+  ;; The LAS type structure has an error code stored in (nth 7 las-state). This is the error code
+  ;; that is set. See [FUNC] for more detail on the LAS type structure.
+  ;;
+  ;; Excerpt:
+  ;; (nth 7 ls3-state) :> Error Code as follows:
+  ;;                        0 = No Error
+  ;;                        1 = Invalid amount size (# of states) for Layer State
+  ;;                        2 = Bad value for a state (i.e. color > 255) with # being a state
+  ;;                            numbered 0 - 6.
+  ;;                        3 = Multiple states were found to be invalid.
+  ;;                        4 = Unknown error
+  ;;
+  ;; Note that if an error was found in the las-state, the states are set to their default values.
+  ;; This may change in the future if the user wishes to give permision on this feature.
+  ;;
+  ;; Calls:
+  ;;
+  ;; Parameters:
+  ;;
+  ;; Local Variables:
+  ;;
+  ;; Returns:
+  ;;
+  ;; ToDo:
+  ;;
+  ;; Revisions:
+  ;;
+  ;; Code:
+  (setq _default-state_
     (list
       ""
       64
@@ -165,98 +307,107 @@
       0
       )
     )
-  (setq _ERR_NO_ERROR 0)
-  (setq _ERR_INVALID_SIZE 1)
-  (setq _ERR_BAD_VALUE 20)
-  (setq _STATE_MAX_LENGTH 8)
-  (if (= is_new_state 1) (1- _STATE_MAX_LENGTH))
-  (setq _STATE_BIT_FACTORS (1 2 4 16 64 128))
-  (setq _STATE_BIT_MAX (+ _STATE_BIT_FACTORS))
-  (setq _STATE_BIT_MIN 0)
-  (setq _STATE_COLOR_MAX 255)
-  (setq _STATE_COLOR_MIN 0)
+  (setq _err.no-error_ 0)
+  (setq _err.invalid-size_ 1)
+  (setq _err.bad-value_ 20)
+  (setq _state.max-length_ 8)
+  (if (= is_new_state 1) (1- _state.max-length_))
+  (setq _state.bit-factors_ (1 2 4 16 64 128))
+  (setq _state.bit-max_ (+ _state.bit-factors_))
+  (setq _state.bit-min_ 0)
+  (setq _state.color-max_ 255)
+  (setq _state.color-min_ 0)
 
   (cond
-    ; If ls3_state length is wrong.
-    ((> (length ls3_state) _STATE_MAX_SIZE)
+    ;; If ls3-state length is wrong.
+    ((> (length ls3-state) _state.max-length_)
       (append
-        (GET_FIRST_N ls3_state _STATE_MAX_SIZE)
-        (_ERR_INVALID_SIZE)
+        (HGG:Get-First-N ls3-state _state.max-length_)
+        (_err.invalid-size_)
         )
       )
-    ((> (length ls3_state) _STATE_MAX_SIZE)
+    ((> (length ls3-state) _state.max-length_)
      (append
-       (ls3_state)
-       (reverse (cdr (GET_FIRST_N
-                       (reverse _LS3_STATE_DEFAULT) (- _STATE_MAX_SIZE (length ls3_state))
+       (ls3-state)
+       (reverse (cdr (HGG:Get-First-N
+                       (reverse _default-state_) (- _state.max-length_ (length ls3-state))
                        )))
-       (_ERR_INVALID_SIZE)
+       (_err.invalid-size_)
        )
      )
-    ; If the state is an invalid state.
+    ;; If the state is an invalid state.
     ((or
-        ; State is a number
-        (numberp (nth 1 ls3_state))
-        ; State is greater than max bit value or less than min bit value
-        (< (nth 1 ls3_state) _STATE_BIT_MIN)
-        (> (nth 1 ls3_state) _STATE_BIT_MAX)
-        ; State is a factor of 1 2 4 16 64 or 128.
+        ;; State is a number
+        (numberp (nth 1 ls3-state))
+        ;; State is greater than max bit value or less than min bit value
+        (< (nth 1 ls3-state) _state.bit-min_)
+        (> (nth 1 ls3-state) _state.bit-max_)
+        ;; State is a not a factor of 1 2 4 16 64 or 128.
+        (equal (logand (nth 1 ls3-state) 8) 8)
+        (equal (logand (nth 1 ls3-state) 32) 32)
         )
-     (REPLACE_N
-       (append (GET_FIRST_N ls3_state _STATE_MAX_SIZE) (+ _ERR_BAD_VALUE 1))
-       (nth 1 _LS3_STATE_DEFAULT)
+     (HGG:Replace-N
+       (append (HGG:Get-First-N ls3-state _state.max-length_) (+ _err.bad-value_ 1))
+       (nth 1 _default-state_)
        1
        )
      )
-    ; If color of layer invalid.
-    ((or (> (nth 2 ls3_state) _STATE_COLOR_MAX) (< (nth 2 ls3_state) _STATE_COLOR_MIN))
-     (REPLACE_N
-       (append (GET_FIRST_N ls3_state _STATE_MAX_SIZE) (+ _ERR_BAD_VALUE 2))
-       (nth 2 _LS3_STATE_DEFAULT)
+    ;; If color of layer invalid.
+    ((or (> (nth 2 ls3-state) _state.color-max_) (< (nth 2 ls3-state) _state.color-min_))
+     (HGG:Replace-N
+       (append (HGG:Get-First-N ls3-state _state.max-length_) (+ _err.bad-value_ 2))
+       (nth 2 _default-state_)
        2
        )
      )
-    ; Line Weight is a number
-    ; Line type is empty
-    ((equal (nth 4 ls3_state) "")
-     (REPLACE_N
-       (append (GET_FIRST_N ls3_state _STATE_MAX_SIZE) (+ _ERR_BAD_VALUE 4))
-       (nth 4 _LS3_STATE_DEFAULT)
+    ;; Line Weight is a number
+    ((not (numberp (nth 3 ls3-state)))
+     (HGG:Replace-N
+       (append (HGG:Get-First-N ls3-state _state.max-length_) (+ _err.bad-value_ 3))
+       (nth 3 _default-state_)
+       3
+       )
+     )
+    ;; Line type is empty
+    ((equal (nth 4 ls3-state) "")
+     (HGG:Replace-N
+       (append (HGG:Get-First-N ls3-state _state.max-length_) (+ _err.bad-value_ 4))
+       (nth 4 _default-state_)
        4
        )
      )
-    ; Plot style string is in format of Color_###
+    ;; Plot style string is in format of Color_###
     (
      (or
-       (not (wcmatch (nth 5 ls3_state) "Color_*"))
-       (atoi (vl-string-left-trim "Color_" (nth 5 ls3_state)))
-       (> (atoi (vl-string-left-trim "Color_" (nth 5 ls3_state))) _STATE_COLOR_MAX)
-       (< (atoi (vl-string-left-trim "Color_" (nth 5 ls3_state))) _STATE_COLOR_MIN)
+       (not (wcmatch (nth 5 ls3-state) "Color_*"))
+       (atoi (vl-string-left-trim "Color_" (nth 5 ls3-state)))
+       (> (atoi (vl-string-left-trim "Color_" (nth 5 ls3-state))) _state.color-max_)
+       (< (atoi (vl-string-left-trim "Color_" (nth 5 ls3-state))) _state.color-min_)
        )
-     (REPLACE_N
-       (append (GET_FIRST_N ls3_state _STATE_MAX_SIZE) (+ _ERR_BAD_VALUE 5))
-       (nth 5 _LS3_STATE_DEFAULT)
+     (HGG:Replace-N
+       (append (HGG:Get-First-N ls3-state _state.max-length_) (+ _err.bad-value_ 5))
+       (nth 5 _default-state_)
        5
        )
      )
-    ; Current Layer is either 0 or 1
-    ((equal (member (nth 6 ls3_state) '(0 1)) nil)
-     (REPLACE_N
-       (append (GET_FIRST_N ls3_state _STATE_MAX_SIZE) (+ _ERR_BAD_VALUE 6))
-       (nth 6 _LS3_STATE_DEFAULT)
+    ;; Current Layer is either 0 or 1
+    ((equal (member (nth 6 ls3-state) '(0 1)) nil)
+     (HGG:Replace-N
+       (append (HGG:Get-First-N ls3-state _state.max-length_) (+ _err.bad-value_ 6))
+       (nth 6 _default-state_)
        6
        )
      )
     )
   )
 
-(defun _LAS_STATE_FROM_LS3 (ls3_state)
+(defun HGG:Convert-Ls3-File:Ls3-State:From-Ls3 (ls3-state)
   """
   Converts a ls3 type layer state to a LAS type layer state.
 
   The LAS type layer state has the following structure:
-    ls3_state[0] = Layer Name as a string.
-    ls3_state[1] = Layer state as bits where bits are as follows:
+    ls3-state[0] = Layer Name as a string.
+    ls3-state[1] = Layer state as bits where bits are as follows:
                     1 = Is Off
                     2 = Is Frozen
                     4 = Is Locked
@@ -265,36 +416,70 @@
                     32 = Is Vp Frozen
                     64 = N/A
                     128 = N/A
-    ls3_state[2] = Color of layer (1 - 255)
-    ls3_state[3] = Line weight in 100's of mm, i.e. 211 = 2.11mm
-    ls3_state[4] = Line Type as a string.
-    ls3_state[5] = Plot Style
-    ls3_state[6] = Transperancy
-    ls3_state[7] = Error Flag
+    ls3-state[2] = Color of layer (1 - 255)
+    ls3-state[3] = Line weight in 100's of mm, i.e. 211 = 2.11mm
+    ls3-state[4] = Line Type as a string.
+    ls3-state[5] = Plot Style
+    ls3-state[6] = Transperancy
+    ls3-state[7] = Error Flag
   """
+  ;; Converts a LS3 type layer-state to a LAS type layer-state.
+  ;;
+  ;; [Multi-line summary]
+  ;;
+  ;; Calls:
+  ;;
+  ;; Parameters:
+  ;;
+  ;; Local Variables:
+  ;;
+  ;; Returns:
+  ;;
+  ;; ToDo:
+  ;;
+  ;; Revisions:
+  ;;
+  ;; Code:
   (append
-    (car ls3_state); name
-    (or; Bitwise math for state:
-        (> (nth 2 ls3_state) 0)
-        (lsh (and ls3_state 1) 1)
-        (and ls3_state 4)
-        (lsh (and ls3_state 64) -3)
-        (lsh (and ls3_state 2) 3)
-        (lsh (and ls3_state 128) -2)
+    (car ls3-state); name
+    (logior; Bitwise math for state:
+        (> (nth 2 ls3-state) 0)
+        (lsh (logand ls3-state 1) 1)
+        (logand ls3-state 4)
+        (lsh (logand ls3-state 64) -3)
+        (lsh (logand ls3-state 2) 3)
+        (lsh (logand ls3-state 128) -2)
       )
-    (abs (nth 2 ls3_state)); color
-    (nth 4 ls3_state); line weight
-    (nth 3 ls3_state); line type
-    (nth 5 ls3_state); plot style
-    (33554687); Transperancy assumed to be 0.
-    (last ls3_state); error flag
+    (abs (nth 2 ls3-state)); color
+    (nth 4 ls3-state); line weight
+    (nth 3 ls3-state); line type
+    (nth 5 ls3-state); plot style
+    33554687; Transperancy assumed to be 0.
+    (last ls3-state); error flag
     )
   )
 
-(defun _LAS_STATE_PRINT (ls3_state)
-  "Prints a layer state to the autocad format with the appriopriate '\n's. Returns nil on error"
+(defun HGG:Convert-Ls3-File:Ls3-State:State-Print (ls3-state)
+  "Prints a layer state to the AutoCAD format with the appropriate '\n's. Returns nil on error"
+  ;; [One-line summary]
+  ;;
+  ;; [Multi-line summary]
+  ;;
+  ;; Calls:
+  ;;
+  ;; Parameters:
+  ;;
+  ;; Local Variables:
+  ;;
+  ;; Returns:
+  ;;
+  ;; ToDo:
+  ;;
+  ;; Revisions:
+  ;;
+  ;; Code:
   (setq n 0)
-  (foreach state ls3_state
+  (foreach state ls3-state
     (progn
       (cond
         ((= n 1) (print (strcat "8\n" state)))
@@ -311,10 +496,27 @@
 ;;; ---------------------------------------------------------------------------
 ;;; Helper Function(s):
 ;;; ---------------------------------------------------------------------------
-(defun GET_FIRST_N (lst n_max / n)
-  "Returns the first n_max elements of a list."
+(defun HGG:Get-First-N (lst n-max / n)
+  "Returns the first n-max elements of a list."
+  ;; [One-line summary]
+  ;;
+  ;; [Multi-line summary]
+  ;;
+  ;; Calls:
+  ;;
+  ;; Parameters:
+  ;;
+  ;; Local Variables:
+  ;;
+  ;; Returns:
+  ;;
+  ;; ToDo:
+  ;;
+  ;; Revisions:
+  ;;
+  ;; Code:
    (setq n -1)
-   (repeat (>= n (- n_max 1))
+   (repeat (>= n (- n-max 1))
      (progn
        (1+ n)
        (append (nth n lst))
@@ -322,19 +524,58 @@
      )
   )
 
-(defun REPLACE_N (lst new_value nth_element )
-  "Returns a list with the n'th_element replaced with new_value"
+(defun HGG:Replace-N (lst new-value nth-element )
+  "Returns a list with the n'th_element replaced with new-value"
+  ;; [One-line summary]
+  ;;
+  ;; [Multi-line summary]
+  ;;
+  ;; Calls:
+  ;;
+  ;; Parameters:
+  ;;
+  ;; Local Variables:
+  ;;
+  ;; Returns:
+  ;;
+  ;; ToDo:
+  ;;
+  ;; Revisions:
+  ;;
+  ;; Code:
   (append
-    (GET_FIRST_N lst (- nth_element 1))
-    new_value
-    (GET_FIRST_N (reverse lst) (- (length lst) nth_element))
+    (HGG:Get-First-N lst (- nth-element 1))
+    new-value
+    (HGG:Get-First-N (reverse lst) (- (length lst) nth-element))
     )
   )
 
-(defun _READ_TO_DELIMITER (raw_string delimiter_character_code / parsed_string delimiter_position)
-  "Returns the string up to delimiter_code and removes it from raw_string."
-  (setq delimiter_position (vl-string-position delimiter_character_code raw_string))
-  (setq parsed_string (substr raw_string 1 delimiter_position))
-  (setq raw_string (substr raw_string (+ 2 delimiter_position) (strlen raw_string)))
-  (parsed_string)
+(defun HGG:Read-To-Delimiter (string delimiter-character-code / parsed-string delimiter-position)
+  "Returns the string up to delimiter_code and removes it from string."
+  ;; [One-line summary]
+  ;;
+  ;; [Multi-line summary]
+  ;;
+  ;; Calls:
+  ;;
+  ;; Parameters:
+  ;;
+  ;; Local Variables:
+  ;;
+  ;; Returns:
+  ;;
+  ;; ToDo:
+  ;;
+  ;; Revisions:
+  ;;
+  ;; Code:
+  (setq delimiter-position (vl-string-position delimiter-character-code string))
+  (setq parsed-string (substr string 1 delimiter-position))
+  (setq string (substr string (+ 2 delimiter-position) (strlen string)))
+  parsed-string
   )
+
+;; Program continuation:
+(vl-load-com)
+(princ)
+;;; ConvertLayerSetFile.LSP
