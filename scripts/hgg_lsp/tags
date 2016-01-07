@@ -1,0 +1,34 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+C:CALCERROR	.\CloseTraverse.lsp	/^(defun C:CALCERROR (\/ _values _error)$/;"	f
+C:CLOSETRAVERSE	.\CloseTraverse.lsp	/^(defun C:CLOSETRAVERSE (\/ i departs lats ss ss_count ss_entity x y)$/;"	f
+C:ExportElevations	.\SurfaceElevationAnalysis.lsp	/^(defun C:ExportElevations ( \/ ALLREGIONS CNT DGMENTENTITY SSDGMS )$/;"	f
+C:ImportElevations	.\SurfaceElevationAnalysis.lsp	/^(defun C:ImportElevations ( \/ ALLREGIONS CNT DGMENTENTITY SSDGMS )$/;"	f
+C:SETUPAUTOCAD	.\SetupAutoCAD.lsp	/^(defun C:SETUPAUTOCAD$/;"	f
+C:TransferElevations	.\SurfaceElevationAnalysis.lsp	/^(defun C:TransferElevations ( \/ ALLREGIONS CNT DGMENTENTITY SSDGMS )$/;"	f
+C:XAL	.\XrefAttachAtLayer.LSP	/^(defun C:XAL (\/ a current_layer xref_data new_layer update_current_layer update_xref_data)$/;"	f
+C:_xattach	.\XrefAttachAtLayer.LSP	/^(defun C:_xattach () (C:XAL))$/;"	f
+C:xattach	.\XrefAttachAtLayer.LSP	/^(defun C:xattach () (C:XAL))$/;"	f
+GETTINDATA	.\SurfaceElevationAnalysis.lsp	/^(defun GETTINDATA (dgmententity \/$/;"	f
+HGG:Convert-Ls3-File	.\ConvertLayerSetFile.lsp	/^(defun HGG:Convert-Ls3-File ( \/ file-list default-filename)$/;"	f
+HGG:Convert-Ls3-File:Ls3-State:Check-For-Errors	.\ConvertLayerSetFile.lsp	/^(defun HGG:Convert-Ls3-File:Ls3-State:Check-For-Errors (ls3-state is_new_state$/;"	f
+HGG:Convert-Ls3-File:Ls3-State:From-Ls3	.\ConvertLayerSetFile.lsp	/^(defun HGG:Convert-Ls3-File:Ls3-State:From-Ls3 (ls3-state)$/;"	f
+HGG:Convert-Ls3-File:Ls3-State:Parse-string	.\ConvertLayerSetFile.lsp	/^(defun HGG:Convert-Ls3-File:Ls3-State:Parse-string (string \/ ls3-state)$/;"	f
+HGG:Convert-Ls3-File:Ls3-State:State-Print	.\ConvertLayerSetFile.lsp	/^(defun HGG:Convert-Ls3-File:Ls3-State:State-Print (ls3-state)$/;"	f
+HGG:Convert-Ls3-File:Process-File	.\ConvertLayerSetFile.lsp	/^(defun HGG:Convert-Ls3-File:Process-File (ls3-file las-file \/ line layers layer-state)$/;"	f
+HGG:Convert-Ls3-File:Process-Files	.\ConvertLayerSetFile.lsp	/^(defun HGG:Convert-Ls3-File:Process-Files (file-list default-filename \/ ls3-file las-filename las-file)$/;"	f
+HGG:Get-First-N	.\ConvertLayerSetFile.lsp	/^(defun HGG:Get-First-N (lst n-max \/ n)$/;"	f
+HGG:Read-To-Delimiter	.\ConvertLayerSetFile.lsp	/^(defun HGG:Read-To-Delimiter (string delimiter-character-code \/ parsed-string delimiter-position)$/;"	f
+HGG:Replace-N	.\ConvertLayerSetFile.lsp	/^(defun HGG:Replace-N (lst new-value nth-element )$/;"	f
+PUTTINDATA	.\SurfaceElevationAnalysis.lsp	/^(defun PUTTINDATA (DGMententity Regions$/;"	f
+RegionDataok?	.\SurfaceElevationAnalysis.lsp	/^(defun RegionDataok? (AllRegions)$/;"	f
+c:CNN	.\Clean.lsp	/^(defun c:CNN nil$/;"	f
+c:FR	.\LayerFreeze.lsp	/^(defun c:FR nil$/;"	f
+c:PB	.\NestedProbe.lsp	/^(defun c:PB nil$/;"	f
+c:RST	.\Restore.lsp	/^(defun c:RST nil$/;"	f
+c:SELECTINLAYER	.\SelectInLayer.lsp	/^(defun c:SELECTINLAYER ( \/ *error* layer_name)$/;"	f
+c:SSS	.\SuperQuickSave.lsp	/^(defun c:SSS ( \/ *error*)$/;"	f

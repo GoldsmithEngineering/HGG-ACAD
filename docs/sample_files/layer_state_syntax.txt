@@ -1,0 +1,36 @@
+0
+LAYERSTATEDICTIONARY
+0
+LAYERSTATE
+1
+[Layer State Name]
+91
+2047
+301
+[Layer State Description]
+290
+1
+302
+[Current Layer]
+8
+[Layer Name]
+90
+[Layer State as bit]
+  1 = Is Off
+  2 = Is Frozen
+  4 = Is Locked
+  8 = Is Plottable
+  16 = Is New VP Frozen
+  32 = Is Vp Frozen
+  64 = none
+  128 = none
+62
+[Color 1 - 255]
+370
+[Line Weight in 100's of mm, i.e. 211 = 2.11mm]
+6
+[Line type]
+2
+[Plot Style]
+440
+[Transperancy with some weird whacky funk numbering business]
