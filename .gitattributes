@@ -1,6 +1,9 @@
 # Auto detect text files and perform LF normalization
 * text=auto
 
+# Custom for Visual Studio
+*.cs     diff=csharp
+
 # Standard to msysgit
 *.doc	 diff=astextplain
 *.DOC	 diff=astextplain
@@ -19,7 +22,7 @@
 .gitattributes export-ignore
 
 # Folders:
-export-ignore
+docs export-ignore
 
 # Language
-*.lsp linguist-language=AutoLisp
+*.rb linguist-language=Lisp
