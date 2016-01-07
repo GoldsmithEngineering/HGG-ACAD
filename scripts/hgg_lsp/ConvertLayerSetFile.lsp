@@ -1,27 +1,72 @@
 ;;; ConvertLayerSetFile.LSP -- Custom command designed to convert ls3 files into las files.
 ;;;
-;;; Copyright (C) 2016, Creative Commons License.
+;;; Copyright (C) 2016, Szabolcs Pasztor, All Rights Reserved.
 ;;;
-;;; Author: Szabolcs Pasztor <szabolcs1992@gmail.com>
-;;; Created: 22 August 2015
-;;; Modified: 03 January 2016
-;;; Version: 1.0.1
-;;; Keywords: ls3, convert, las, layerset, layerstate
+;;; Author
+;;;   Szabolcs Pasztor <szabolcs1992@gmail.com>
 ;;;
-;;; Commentary: This command is used to convert layerset (.ls3) files into layerstate (.las) files.
-;;;             This allows for compatibility for Goldsmith Engineering from the depreciated
-;;;             layerset custom program.
+;;; Created:
+;;;   22 August 2015
+;;;
+;;; Modified:
+;;;   06 January 2016
+;;;
+;;; Version:
+;;;   1.0.1
+;;;
+;;; Keywords:
+;;;   ls3, convert, las, layerset, layerstate, layer
+;;;
+;;; Purpose:
+;;;   This command is used to convert layer-set (.ls3) files into layer-state (.las) files. This
+;;;   allows for compatibility for Goldsmith Engineering from the depreciated layer-set custom
+;;;   program.
 ;;;
 ;;; Notes:
-;;; All code follows (https://google.github.io/styleguide/lispguide.xml) for styliziation rules
-;;; and uses [FIND DOCUMENATION TOOL] for creating code documentation.
+;;; - I have yet to find "official" specific rules in styling LISP code therefore all code follows
+;;;   the Google Common Lisp Style Guide for styling rules with exceptions outlined below.
+;;;   For info on the style guide see: https://google.github.io/styleguide/lispguide.xml
+;;;
+;;;   1)  Because AutoLISP doesn't have organizational structures like name-spaces and key object
+;;;       types like classes or structs/enums, the colon is used to "emulate", for simplicity, a
+;;;       class like structure. Typical function naming structure is as follows:
+;;;
+;;;         HGG:[Main-Function-Name]:[Sub-Function-Name]:[Sub-Function-Helper-Name]
+;;;
+;;;       Similarly for variables:
+;;;
+;;;         [topic]:[atom=descriptor]
+;;;
+;;;       It looks a little crazy but I need to know what the fuck I am working with in this crazy
+;;;       language.
+;;;
+;;;   2) All Functions have the first letter of every word capitalized.
+;;;
+;;;   3) Local Constants should start and end with underscore characters.
+;;;
+;;; - This file also uses ROBODoc for documentation generation because of the lack of
+;;;   documentation tags in AutoLisp.
+;;;
+;;;   For help in understanding the documentation tags see: http://rfsber.home.xs4all.nl/Robo/
 ;;;
 ;;; ToDo:
-;;; (S.P.) @12-20-2015) - Finish layer-state processing.
+;;;   (S.P.) @12-20-2015) - Finish layer-state processing.
+;;;   (S.P.) @01-06-2016) - Document Code.
+;;;   (S.P.) @01-06-2016) - Implement RoboDoc Support
+;;;   (S.P.) @01-06-2016) - Implement layer-state accessing (nth # layer-state) using global
+;;;                         variables as mock enums to remove the magic numbers.
+;;;   (S.P.) @01-06-2016) - Go through code and complete functions.
+;;;   (S.P.) @01-06-2016) - Make flowchart of process to understand wtf is going on.
+;;;   (S.P.) @01-06-2016) - Debug in Visual Lisp
 ;;;
 ;;; Revisions:
 ;;;
 ;;; Code:
+
+;;; --------------------------------------------------------------------------
+;;; Global Variable(s):
+;;; -------------------------------------------------------------------------
+(setq +default-LAS-state+ (list "" 64 7 "Continuous" -3 "Color_7" 0 0 ))
 
 ;;; ---------------------------------------------------------------------------
 ;;; Function(s):
@@ -67,6 +112,7 @@
   ;;
   ;; Calls:
   ;;    (HGG:Convert-Ls3-File:Process-Files)
+  ;;    (HGG:Convert-Ls3-File:Process-File)
   ;;
   ;; Parameters:
   ;;    (file-list) - List of files to convert from ls3 to las
@@ -251,20 +297,9 @@
   )
 
 (defun HGG:Convert-Ls3-File:Ls3-State:Check-For-Errors (ls3-state is_new_state
-                                   / _default-state_ _err.no-error_ _err.invalid-size_
-                                   _err.bad-value_ _state.max-length_ _state.bit-factors_
-                                   _state.bit-max_ _state.bit-min_ _state.color-max_ _state.color-min_)
-  """
-  Checks to see if the layer-state is valid then respectively sets the error code.
-
-  The error codes are as follows:
-                       0  = No Error.
-                       1  = Invalid amount size (# of states) for Layer State.
-                       2# = Bad value for a state (i.e. color > 255) with # being the state.
-                       3  = Multiple Errors were found.
-  If an error code > 0 has been found, the states that were found to be corrupt or missing are
-  replaced with the default values.
-  """
+                                   / _err:no-error_ _err:invalid-size_
+                                   _err:bad-value_ _state:max-length_ _state:max-length_
+                                   _state:bit-max_ _state:bit-min_ _state:color-max_ _state:color-min_)
   ;; Validates a LAS type later-state and sets the error code on the returned las-state.
   ;;
   ;; The LAS type structure has an error code stored in (nth 7 las-state). This is the error code
@@ -283,56 +318,67 @@
   ;; This may change in the future if the user wishes to give permision on this feature.
   ;;
   ;; Calls:
+  ;;    (HGG:Get-First-N)
+  ;;    (HGG:Replace-N)
+  
+  ;; Global Variables used:
+  ;;    (+default-state_) - The default values for a LS3 type layer state.
   ;;
   ;; Parameters:
+  ;;    (ls3-state) - The layer -state in LS3 Type format.
+  ;;    (is_new_state) - A predicate to indicate whether this is a brand new state or not.
   ;;
   ;; Local Variables:
+  ;;    None.
   ;;
-  ;; Returns:
+  ;; Local Constants:
+  ;;    (_err:no-error_) -
+  ;;    (_err:invalid-size_) -
+  ;;    (_err:bad-value_) -
+  ;;    (_state:max-length_) -
+  ;;    (_state:max-length_) -
+  ;;    (_state:bit-max_) -
+  ;;    (_state:bit-min_) -
+  ;;    (_state:color-max_) -
+  ;;    (_state:color-min_) -
+  ;;
+  ;; Returns
+  ;;    The layer state in type LS3 format with an error flag set and states defaulted to normal
+  ;;    if an error was found.
   ;;
   ;; ToDo:
+  ;;    (S.P) @(01-07-16) - Remove dependency on "is_new_state".
+  ;;    (S.P.) @01-06-2016) - Make local constants global.
   ;;
   ;; Revisions:
   ;;
   ;; Code:
-  (setq _default-state_
-    (list
-      ""
-      64
-      7
-      "Continuous"
-      -3
-      "Color_7"
-      0
-      0
-      )
-    )
-  (setq _err.no-error_ 0)
-  (setq _err.invalid-size_ 1)
-  (setq _err.bad-value_ 20)
-  (setq _state.max-length_ 8)
-  (if (= is_new_state 1) (1- _state.max-length_))
-  (setq _state.bit-factors_ (1 2 4 16 64 128))
-  (setq _state.bit-max_ (+ _state.bit-factors_))
-  (setq _state.bit-min_ 0)
-  (setq _state.color-max_ 255)
-  (setq _state.color-min_ 0)
+  (setq _err:no-error_ 0)
+  (setq _err:invalid-size_ 1)
+  (setq _err:bad-value_ 20)
+  (setq _state:max-length_ 8)
+  (if (= is_new_state 1) (1- _state:max-length_))
+  (setq _state:max-length_ (1 2 4 16 64 128))
+  (setq _state:bit-max_ (+ _state:max-length_))
+  (setq _state:bit-min_ 0)
+  (setq _state:color-max_ 255)
+  (setq _state:color-min_ 0)
 
   (cond
     ;; If ls3-state length is wrong.
-    ((> (length ls3-state) _state.max-length_)
+    ((> (length ls3-state) _state:max-length_)
       (append
-        (HGG:Get-First-N ls3-state _state.max-length_)
-        (_err.invalid-size_)
+        (HGG:Get-First-N ls3-state _state:max-length_)
+        (_err:invalid-size_)
         )
       )
-    ((> (length ls3-state) _state.max-length_)
+    ((> (length ls3-state) _state:max-length_)
      (append
        (ls3-state)
        (reverse (cdr (HGG:Get-First-N
-                       (reverse _default-state_) (- _state.max-length_ (length ls3-state))
+                       (reverse +default-las-state+) (- _state:max-length_ (length ls3-state))
                        )))
-       (_err.invalid-size_)
+       (_err:invalid-size_)
        )
      )
     ;; If the state is an invalid state.
@@ -340,39 +386,39 @@
         ;; State is a number
         (numberp (nth 1 ls3-state))
         ;; State is greater than max bit value or less than min bit value
-        (< (nth 1 ls3-state) _state.bit-min_)
-        (> (nth 1 ls3-state) _state.bit-max_)
+        (< (nth 1 ls3-state) _state:bit-min_)
+        (> (nth 1 ls3-state) _state:bit-max_)
         ;; State is a not a factor of 1 2 4 16 64 or 128.
         (equal (logand (nth 1 ls3-state) 8) 8)
         (equal (logand (nth 1 ls3-state) 32) 32)
         )
      (HGG:Replace-N
-       (append (HGG:Get-First-N ls3-state _state.max-length_) (+ _err.bad-value_ 1))
-       (nth 1 _default-state_)
+       (append (HGG:Get-First-N ls3-state _state:max-length_) (+ _err:bad-value_ 1))
+       (nth 1 +default-las-state+)
        1
        )
      )
     ;; If color of layer invalid.
-    ((or (> (nth 2 ls3-state) _state.color-max_) (< (nth 2 ls3-state) _state.color-min_))
+    ((or (> (nth 2 ls3-state) _state:color-max_) (< (nth 2 ls3-state) _state:color-min_))
      (HGG:Replace-N
-       (append (HGG:Get-First-N ls3-state _state.max-length_) (+ _err.bad-value_ 2))
-       (nth 2 _default-state_)
+       (append (HGG:Get-First-N ls3-state _state:max-length_) (+ _err:bad-value_ 2))
+       (nth 2 +default-las-state+)
        2
        )
      )
     ;; Line Weight is a number
     ((not (numberp (nth 3 ls3-state)))
      (HGG:Replace-N
-       (append (HGG:Get-First-N ls3-state _state.max-length_) (+ _err.bad-value_ 3))
-       (nth 3 _default-state_)
+       (append (HGG:Get-First-N ls3-state _state:max-length_) (+ _err:bad-value_ 3))
+       (nth 3 +default-las-state+)
        3
        )
      )
     ;; Line type is empty
     ((equal (nth 4 ls3-state) "")
      (HGG:Replace-N
-       (append (HGG:Get-First-N ls3-state _state.max-length_) (+ _err.bad-value_ 4))
-       (nth 4 _default-state_)
+       (append (HGG:Get-First-N ls3-state _state:max-length_) (+ _err:bad-value_ 4))
+       (nth 4 +default-las-state+)
        4
        )
      )
@@ -381,20 +427,20 @@
      (or
        (not (wcmatch (nth 5 ls3-state) "Color_*"))
        (atoi (vl-string-left-trim "Color_" (nth 5 ls3-state)))
-       (> (atoi (vl-string-left-trim "Color_" (nth 5 ls3-state))) _state.color-max_)
-       (< (atoi (vl-string-left-trim "Color_" (nth 5 ls3-state))) _state.color-min_)
+       (> (atoi (vl-string-left-trim "Color_" (nth 5 ls3-state))) _state:color-max_)
+       (< (atoi (vl-string-left-trim "Color_" (nth 5 ls3-state))) _state:color-min_)
        )
      (HGG:Replace-N
-       (append (HGG:Get-First-N ls3-state _state.max-length_) (+ _err.bad-value_ 5))
-       (nth 5 _default-state_)
+       (append (HGG:Get-First-N ls3-state _state:max-length_) (+ _err:bad-value_ 5))
+       (nth 5 +default-las-state+)
        5
        )
      )
     ;; Current Layer is either 0 or 1
     ((equal (member (nth 6 ls3-state) '(0 1)) nil)
      (HGG:Replace-N
-       (append (HGG:Get-First-N ls3-state _state.max-length_) (+ _err.bad-value_ 6))
-       (nth 6 _default-state_)
+       (append (HGG:Get-First-N ls3-state _state:max-length_) (+ _err:bad-value_ 6))
+       (nth 6 +default-las-state+)
        6
        )
      )
