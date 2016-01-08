@@ -4,50 +4,49 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.8	//
-C:CALCERROR	.\scripts\hgg_lsp\CloseTraverse.lsp	/^(defun C:CALCERROR (\/ _values _error)$/;"	f
-C:CLOSETRAVERSE	.\scripts\hgg_lsp\CloseTraverse.lsp	/^(defun C:CLOSETRAVERSE (\/ i departs lats ss ss_count ss_entity x y)$/;"	f
-C:ExportElevations	.\scripts\hgg_lsp\SurfaceElevationAnalysis.lsp	/^(defun C:ExportElevations ( \/ ALLREGIONS CNT DGMENTENTITY SSDGMS )$/;"	f
-C:ImportElevations	.\scripts\hgg_lsp\SurfaceElevationAnalysis.lsp	/^(defun C:ImportElevations ( \/ ALLREGIONS CNT DGMENTENTITY SSDGMS )$/;"	f
-C:SETUPAUTOCAD	.\scripts\hgg_lsp\SetupAutoCAD.lsp	/^(defun C:SETUPAUTOCAD$/;"	f
-C:TransferElevations	.\scripts\hgg_lsp\SurfaceElevationAnalysis.lsp	/^(defun C:TransferElevations ( \/ ALLREGIONS CNT DGMENTENTITY SSDGMS )$/;"	f
-C:XAL	.\scripts\hgg_lsp\XrefAttachAtLayer.LSP	/^(defun C:XAL (\/ a current_layer xref_data new_layer update_current_layer update_xref_data)$/;"	f
-C:_Load_Functions	.\scripts\acad.lsp	/^(defun C:_Load_Functions$/;"	f
-C:_Load_Variables	.\scripts\acad.lsp	/^(defun C:_Load_Variables (\/ i)$/;"	f
-C:_xattach	.\scripts\hgg_lsp\XrefAttachAtLayer.LSP	/^(defun C:_xattach () (C:XAL))$/;"	f
-C:xattach	.\scripts\hgg_lsp\XrefAttachAtLayer.LSP	/^(defun C:xattach () (C:XAL))$/;"	f
-GETTINDATA	.\scripts\hgg_lsp\SurfaceElevationAnalysis.lsp	/^(defun GETTINDATA (dgmententity \/$/;"	f
-HGG:Convert-Ls3-File	.\scripts\hgg_lsp\ConvertLayerSetFile.lsp	/^(defun HGG:Convert-Ls3-File ( \/ file-list default-filename)$/;"	f
-HGG:Convert-Ls3-File:Ls3-State:Check-For-Errors	.\scripts\hgg_lsp\ConvertLayerSetFile.lsp	/^(defun HGG:Convert-Ls3-File:Ls3-State:Check-For-Errors (ls3-state is_new_state$/;"	f
-HGG:Convert-Ls3-File:Ls3-State:From-Ls3	.\scripts\hgg_lsp\ConvertLayerSetFile.lsp	/^(defun HGG:Convert-Ls3-File:Ls3-State:From-Ls3 (ls3-state)$/;"	f
-HGG:Convert-Ls3-File:Ls3-State:Parse-string	.\scripts\hgg_lsp\ConvertLayerSetFile.lsp	/^(defun HGG:Convert-Ls3-File:Ls3-State:Parse-string (string \/ ls3-state)$/;"	f
-HGG:Convert-Ls3-File:Ls3-State:State-Print	.\scripts\hgg_lsp\ConvertLayerSetFile.lsp	/^(defun HGG:Convert-Ls3-File:Ls3-State:State-Print (ls3-state)$/;"	f
-HGG:Convert-Ls3-File:Process-File	.\scripts\hgg_lsp\ConvertLayerSetFile.lsp	/^(defun HGG:Convert-Ls3-File:Process-File (ls3-file las-file \/ line layers layer-state)$/;"	f
-HGG:Convert-Ls3-File:Process-Files	.\scripts\hgg_lsp\ConvertLayerSetFile.lsp	/^(defun HGG:Convert-Ls3-File:Process-Files (file-list default-filename \/ ls3-file las-filename las-file)$/;"	f
-HGG:Get-First-N	.\scripts\hgg_lsp\ConvertLayerSetFile.lsp	/^(defun HGG:Get-First-N (lst n-max \/ n)$/;"	f
-HGG:Read-To-Delimiter	.\scripts\hgg_lsp\ConvertLayerSetFile.lsp	/^(defun HGG:Read-To-Delimiter (string delimiter-character-code \/ parsed-string delimiter-position)$/;"	f
-HGG:Replace-N	.\scripts\hgg_lsp\ConvertLayerSetFile.lsp	/^(defun HGG:Replace-N (lst new-value nth-element )$/;"	f
-LM:getfiles	.\scripts\lsp\GetFilesv1-4.lsp	/^(defun LM:getfiles ( msg def ext \/ *error* dch dcl des dir dirdata lst rtn )$/;"	f
-LM:getfiles:browseforfolder	.\scripts\lsp\GetFilesv1-4.lsp	/^(defun LM:getfiles:browseforfolder ( msg dir flg \/ err fld pth shl slf )$/;"	f
-LM:getfiles:checkredirect	.\scripts\lsp\GetFilesv1-4.lsp	/^(defun LM:getfiles:checkredirect ( dir \/ itm pos )$/;"	f
-LM:getfiles:fixdir	.\scripts\lsp\GetFilesv1-4.lsp	/^(defun LM:getfiles:fixdir ( dir )$/;"	f
-LM:getfiles:full->relative	.\scripts\lsp\GetFilesv1-4.lsp	/^(defun LM:getfiles:full->relative ( dir path \/ p q )$/;"	f
-LM:getfiles:groupbyfunction	.\scripts\lsp\GetFilesv1-4.lsp	/^(defun LM:getfiles:groupbyfunction ( lst fun \/ tmp1 tmp2 x1 )$/;"	f
-LM:getfiles:listbox	.\scripts\lsp\GetFilesv1-4.lsp	/^(defun LM:getfiles:listbox ( key lst )$/;"	f
-LM:getfiles:listfiles	.\scripts\lsp\GetFilesv1-4.lsp	/^(defun LM:getfiles:listfiles ( dir ext lst )$/;"	f
-LM:getfiles:removeitems	.\scripts\lsp\GetFilesv1-4.lsp	/^(defun LM:getfiles:removeitems ( itm lst \/ idx )$/;"	f
-LM:getfiles:sort	.\scripts\lsp\GetFilesv1-4.lsp	/^(defun LM:getfiles:sort ( lst )$/;"	f
-LM:getfiles:sortlist	.\scripts\lsp\GetFilesv1-4.lsp	/^(defun LM:getfiles:sortlist ( lst )$/;"	f
-LM:getfiles:splitstring	.\scripts\lsp\GetFilesv1-4.lsp	/^(defun LM:getfiles:splitstring ( str )$/;"	f
-LM:getfiles:str->lst	.\scripts\lsp\GetFilesv1-4.lsp	/^(defun LM:getfiles:str->lst ( str del \/ pos )$/;"	f
-LM:getfiles:updatefilelist	.\scripts\lsp\GetFilesv1-4.lsp	/^(defun LM:getfiles:updatefilelist ( dir ext lst )$/;"	f
-LM:getfiles:updateselected	.\scripts\lsp\GetFilesv1-4.lsp	/^(defun LM:getfiles:updateselected ( dir lst )$/;"	f
-LM:getfiles:updir	.\scripts\lsp\GetFilesv1-4.lsp	/^(defun LM:getfiles:updir ( dir )$/;"	f
-MYSTARTUP	.\scripts\acad.lsp	/^(defun-q MYSTARTUP$/;"	f
-PUTTINDATA	.\scripts\hgg_lsp\SurfaceElevationAnalysis.lsp	/^(defun PUTTINDATA (DGMententity Regions$/;"	f
-RegionDataok?	.\scripts\hgg_lsp\SurfaceElevationAnalysis.lsp	/^(defun RegionDataok? (AllRegions)$/;"	f
-c:CNN	.\scripts\hgg_lsp\Clean.lsp	/^(defun c:CNN nil$/;"	f
-c:FR	.\scripts\hgg_lsp\LayerFreeze.lsp	/^(defun c:FR nil$/;"	f
-c:PB	.\scripts\hgg_lsp\NestedProbe.lsp	/^(defun c:PB nil$/;"	f
-c:RST	.\scripts\hgg_lsp\Restore.lsp	/^(defun c:RST nil$/;"	f
-c:SELECTINLAYER	.\scripts\hgg_lsp\SelectInLayer.lsp	/^(defun c:SELECTINLAYER ( \/ *error* layer_name)$/;"	f
-c:SSS	.\scripts\hgg_lsp\SuperQuickSave.lsp	/^(defun c:SSS ( \/ *error*)$/;"	f
+C:CALCERROR	.\source\CloseTraverse.lsp	/^(defun C:CALCERROR (\/ _values _error)$/;"	f
+C:CLOSETRAVERSE	.\source\CloseTraverse.lsp	/^(defun C:CLOSETRAVERSE (\/ i departs lats ss ss_count ss_entity x y)$/;"	f
+C:ExportElevations	.\source\SurfaceElevationAnalysis.lsp	/^(defun C:ExportElevations ( \/ ALLREGIONS CNT DGMENTENTITY SSDGMS )$/;"	f
+C:ImportElevations	.\source\SurfaceElevationAnalysis.lsp	/^(defun C:ImportElevations ( \/ ALLREGIONS CNT DGMENTENTITY SSDGMS )$/;"	f
+C:SETUPAUTOCAD	.\source\SetupAutoCAD.lsp	/^(defun C:SETUPAUTOCAD$/;"	f
+C:TransferElevations	.\source\SurfaceElevationAnalysis.lsp	/^(defun C:TransferElevations ( \/ ALLREGIONS CNT DGMENTENTITY SSDGMS )$/;"	f
+C:XAL	.\source\XrefAttachAtLayer.LSP	/^(defun C:XAL (\/ a current_layer xref_data new_layer update_current_layer update_xref_data)$/;"	f
+C:_Load_Functions	.\source\loaders\acad.lsp	/^(defun C:_Load_Functions$/;"	f
+C:_Load_Variables	.\source\loaders\acad.lsp	/^(defun C:_Load_Variables (\/ i)$/;"	f
+C:_xattach	.\source\XrefAttachAtLayer.LSP	/^(defun C:_xattach () (C:XAL))$/;"	f
+C:xattach	.\source\XrefAttachAtLayer.LSP	/^(defun C:xattach () (C:XAL))$/;"	f
+GETTINDATA	.\source\SurfaceElevationAnalysis.lsp	/^(defun GETTINDATA (dgmententity \/$/;"	f
+HGG:Convert-Ls3-File	.\source\ConvertLayerSetFile.lsp	/^(defun HGG:Convert-Ls3-File ( \/ file-list default-filename)$/;"	f
+HGG:Convert-Ls3-File:Ls3-State:Check-For-Errors	.\source\ConvertLayerSetFile.lsp	/^(defun HGG:Convert-Ls3-File:Ls3-State:Check-For-Errors (ls3-state is_new_state$/;"	f
+HGG:Convert-Ls3-File:Ls3-State:From-Ls3	.\source\ConvertLayerSetFile.lsp	/^(defun HGG:Convert-Ls3-File:Ls3-State:From-Ls3 (ls3-state)$/;"	f
+HGG:Convert-Ls3-File:Ls3-State:Parse-string	.\source\ConvertLayerSetFile.lsp	/^(defun HGG:Convert-Ls3-File:Ls3-State:Parse-string (string \/ ls3-state)$/;"	f
+HGG:Convert-Ls3-File:Ls3-State:State-Print	.\source\ConvertLayerSetFile.lsp	/^(defun HGG:Convert-Ls3-File:Ls3-State:State-Print (ls3-state)$/;"	f
+HGG:Convert-Ls3-File:Process-File	.\source\ConvertLayerSetFile.lsp	/^(defun HGG:Convert-Ls3-File:Process-File (ls3-file las-file \/ line layers layer-state)$/;"	f
+HGG:Get-First-N	.\source\ConvertLayerSetFile.lsp	/^(defun HGG:Get-First-N (lst n-max \/ n)$/;"	f
+HGG:Read-To-Delimiter	.\source\ConvertLayerSetFile.lsp	/^(defun HGG:Read-To-Delimiter (string delimiter-character-code \/ parsed-string delimiter-position)$/;"	f
+HGG:Replace-N	.\source\ConvertLayerSetFile.lsp	/^(defun HGG:Replace-N (lst new-value nth-element )$/;"	f
+LM:getfiles	.\source\modules\GetFilesv1-4.lsp	/^(defun LM:getfiles ( msg def ext \/ *error* dch dcl des dir dirdata lst rtn )$/;"	f
+LM:getfiles:browseforfolder	.\source\modules\GetFilesv1-4.lsp	/^(defun LM:getfiles:browseforfolder ( msg dir flg \/ err fld pth shl slf )$/;"	f
+LM:getfiles:checkredirect	.\source\modules\GetFilesv1-4.lsp	/^(defun LM:getfiles:checkredirect ( dir \/ itm pos )$/;"	f
+LM:getfiles:fixdir	.\source\modules\GetFilesv1-4.lsp	/^(defun LM:getfiles:fixdir ( dir )$/;"	f
+LM:getfiles:full->relative	.\source\modules\GetFilesv1-4.lsp	/^(defun LM:getfiles:full->relative ( dir path \/ p q )$/;"	f
+LM:getfiles:groupbyfunction	.\source\modules\GetFilesv1-4.lsp	/^(defun LM:getfiles:groupbyfunction ( lst fun \/ tmp1 tmp2 x1 )$/;"	f
+LM:getfiles:listbox	.\source\modules\GetFilesv1-4.lsp	/^(defun LM:getfiles:listbox ( key lst )$/;"	f
+LM:getfiles:listfiles	.\source\modules\GetFilesv1-4.lsp	/^(defun LM:getfiles:listfiles ( dir ext lst )$/;"	f
+LM:getfiles:removeitems	.\source\modules\GetFilesv1-4.lsp	/^(defun LM:getfiles:removeitems ( itm lst \/ idx )$/;"	f
+LM:getfiles:sort	.\source\modules\GetFilesv1-4.lsp	/^(defun LM:getfiles:sort ( lst )$/;"	f
+LM:getfiles:sortlist	.\source\modules\GetFilesv1-4.lsp	/^(defun LM:getfiles:sortlist ( lst )$/;"	f
+LM:getfiles:splitstring	.\source\modules\GetFilesv1-4.lsp	/^(defun LM:getfiles:splitstring ( str )$/;"	f
+LM:getfiles:str->lst	.\source\modules\GetFilesv1-4.lsp	/^(defun LM:getfiles:str->lst ( str del \/ pos )$/;"	f
+LM:getfiles:updatefilelist	.\source\modules\GetFilesv1-4.lsp	/^(defun LM:getfiles:updatefilelist ( dir ext lst )$/;"	f
+LM:getfiles:updateselected	.\source\modules\GetFilesv1-4.lsp	/^(defun LM:getfiles:updateselected ( dir lst )$/;"	f
+LM:getfiles:updir	.\source\modules\GetFilesv1-4.lsp	/^(defun LM:getfiles:updir ( dir )$/;"	f
+MYSTARTUP	.\source\loaders\acad.lsp	/^(defun-q MYSTARTUP$/;"	f
+PUTTINDATA	.\source\SurfaceElevationAnalysis.lsp	/^(defun PUTTINDATA (DGMententity Regions$/;"	f
+RegionDataok?	.\source\SurfaceElevationAnalysis.lsp	/^(defun RegionDataok? (AllRegions)$/;"	f
+c:CNN	.\source\Clean.lsp	/^(defun c:CNN nil$/;"	f
+c:FR	.\source\LayerFreeze.lsp	/^(defun c:FR nil$/;"	f
+c:PB	.\source\NestedProbe.lsp	/^(defun c:PB nil$/;"	f
+c:RST	.\source\Restore.lsp	/^(defun c:RST nil$/;"	f
+c:SELECTINLAYER	.\source\SelectInLayer.lsp	/^(defun c:SELECTINLAYER ( \/ *error* layer_name)$/;"	f
+c:SSS	.\source\SuperQuickSave.lsp	/^(defun c:SSS ( \/ *error*)$/;"	f
