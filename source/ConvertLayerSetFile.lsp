@@ -1,31 +1,27 @@
-;;; ConvertLayerSetFile.LSP -- Custom command designed to convert ls3 files into las files.
-;;;
-;;; Copyright (C) 2016, Szabolcs Pasztor, All Rights Reserved.
-;;;
-;;; Author
-;;;   Szabolcs Pasztor <szabolcs1992@gmail.com>
-;;;
-;;; Created:
-;;;   22 August 2015
-;;;
-;;; Modified:
-;;;   06 January 2016
-;;;
-;;; Version:
-;;;   1.0.1
-;;;
-;;; Keywords:
+;;(s* HGG/ConvertLayerSetFile
+;;; NAME
+;;;   ConvertLayerSetFile -- Custom command designed to convert ls3 files into las files. (v1.0.1)
+;;; COPYRIGHT
+;;;   Copyright (C) 2016, Szabolcs Pasztor, All Rights Reserved.
+;;; LICENSE
+;;;   GPL
+;;; TAGS
 ;;;   ls3, convert, las, layerset, layerstate, layer
-;;;
-;;; Purpose:
+;;; PURPOSE
 ;;;   This command is used to convert layer-set (.ls3) files into layer-state (.las) files. This
 ;;;   allows for compatibility for Goldsmith Engineering from the depreciated layer-set custom
 ;;;   program.
-;;;
-;;; Notes:
+;;; AUTHOR
+;;;   Szabolcs Pasztor <szabolcs1992@gmail.com>
+;;; CREATION DATE
+;;;   22 August 2015
+;;; MODIFICATION HISTORY
+;;;   08 January 2016 -- Added RoboDoc Support
+;;; STATUS
+;;;   Development
+;;; NOTES
 ;;; - I have yet to find "official" specific rules in styling LISP code therefore all code follows
 ;;;   the Google Common Lisp Style Guide for styling rules with exceptions outlined below.
-;;;   For info on the style guide see: https://google.github.io/styleguide/lispguide.xml
 ;;;
 ;;;   1)  Because AutoLISP doesn't have organizational structures like name-spaces and key object
 ;;;       types like classes or structs/enums, the colon is used to "emulate", for simplicity, a
@@ -46,100 +42,89 @@
 ;;;
 ;;; - This file also uses ROBODoc for documentation generation because of the lack of
 ;;;   documentation tags in AutoLisp.
-;;;
-;;;   For help in understanding the documentation tags see: http://rfsber.home.xs4all.nl/Robo/
-;;;
-;;; ToDo:
-;;;   (S.P.) @12-20-2015) - Finish layer-state processing.
-;;;   (S.P.) @01-06-2016) - Document Code.
-;;;   (S.P.) @01-06-2016) - Implement RoboDoc Support
-;;;   (S.P.) @01-06-2016) - Implement layer-state accessing (nth # layer-state) using global
-;;;                         variables as mock enums to remove the magic numbers.
-;;;   (S.P.) @01-06-2016) - Go through code and complete functions.
-;;;   (S.P.) @01-06-2016) - Make flowchart of process to understand wtf is going on.
-;;;   (S.P.) @01-06-2016) - Debug in Visual Lisp
-;;;
-;;; Revisions:
-;;;
-;;; Code:
+;;; BUGS
+;;; TODO
+;;;   S.P.@12-20-15 -- Finish layer-state processing.
+;;;   S.P.@01-06-16 -- Document Code.
+;;;   S.P.@01-06-16 -- Implement RoboDoc Support
+;;;   S.P.@01-06-16 -- Implement layer-state accessing (nth # layer-state) using global
+;;;                    variables as mock enums to remove the magic numbers.
+;;;   S.P.@01-06-16 -- Go through code and complete functions.
+;;;   S.P.@01-06-16 -- Make flowchart of process to understand wtf is going on.
+;;;   S.P.@01-06-16 -- Debug in Visual Lisp
+;;; SEE ALSO
+;;;   For info on the style guide:
+;;;   |html https://google.github.io/styleguide/lispguide.xml
+;;;   For help in understanding the documentation tags see:
+;;;   |html https://rfsber.home.xs4all.nl/Robo/
+;;)
 
-;;; --------------------------------------------------------------------------
-;;; Global Variable(s):
-;;; -------------------------------------------------------------------------
+;;(g* HGG/ConvertLayerSetFile/HGG:+default-las-state+
+;;; NAME
+;;;   Default-LAS-state -- The default layer state of LAS type.
+;;; DECLARATION
 (setq +default-LAS-state+ (list "" 64 7 "Continuous" -3 "Color_7" 0 0 ))
+;;; TODO
+;;;   S.P.@01-07-16 -- Refactor to include "HGG" mock name space.
+;;)
 
-;;; ---------------------------------------------------------------------------
-;;; Function(s):
-;;; ---------------------------------------------------------------------------
-
-;;;;;;;f; HGG/Convert-Ls3-File
+;;(f* HGG/ConvertLayerSetFile/HGG:Convert-Ls3-File
 ;;; NAME
 ;;;   Convert-Ls3-File -- Convert a Ls3 file to a LAS file through a dialog box. (V0.0.1)
-;;;
-;;; SYNOPSIS
-;;;   Command: HGG:CONVERT-LS3-FILE
-;;;
-;;; FUNCTION
+;;; PURPOSE
 ;;;   This function asks a user through a dialog box to specify which files they want to convert
 ;;;   from .ls3 to .las. Then it calls a sub function (HGG:Convert-Ls3-File:Process-Files) which
 ;;;   iterates through the list of files and converts them appropriately.
-;;;
-;;; USES
-;;;   (HGG:Convert-Ls3-File:Process-Files)
-;;;   (LM:GETFILES)
-;;;
-;;; Local Variables:
-;;;   (file-list) - The list of ls3 files to process.
-;;;   (default-filename) - 'nil' if a custom file directory is provided.
-;;;
-;;; Returns:
-;;;   None.
-;;;
-;;; ToDo:
-;;;   (S.P.) @(01-05-16) - Update the behavior of default-filename to act more like a custom-file-dir-p
-;;;
-;;;;;;;;;
+;;; DECLARATION
 (defun HGG:Convert-Ls3-File ( / file-list default-filename)
+;;; VARIABLES:
+;;;   file-list -- The list of ls3 files to process.
+;;;   default-filename -- 'nil' if a custom file directory is provided.
+;;; EXAMPLE
+;;;   :> Command: HGG:CONVERT-LS3-FILE
+;;; CALLS
+;;;   HGG:Convert-Ls3-File:Process-Files
+;;;   LM:GETFILES
+;;; TODO
+;;;   S.P.@01-05-16 -- Update the behavior of default-filename to act more like a custom-file-dir-p
+;;; SOURCE
   (init 1 "y" "n")
   (set ans (getkword "/nCreate files in respective directories? [Y]es [N]o:"))
   (setq default-filename (eq ans "y"))
   (setq file-list (LM:GETFILES "Layerset files to convert" "" "ls3"))
   (HGG:Convert-Ls3-File:Process-Files file-list default-filename)
   )
+;;)
 
-;;; ---------------------------------------------------------------------------
-;;; Sub Function(s):
-;;; ---------------------------------------------------------------------------
-;;; |========
-;;;   Recusively processeses the ls3 files.
-;;;
-;;;   [Multi-line summary]
-;;;
-;;; Calls:
-;;;   (HGG:Convert-Ls3-File:Process-Files)
-;;;   (HGG:Convert-Ls3-File:Process-File)
-;;;
-;;; Parameters:
-;;;   (file-list) - List of files to convert from ls3 to las
-;;;   (default-filename) - nil if a custom path is not to be used.
-;;;
-;;; Local Variables:
-;;;   (ls3-file) - The currently loaded *.ls3 file.
-;;;   (las-filename) - Name of the *.las file to save to.
-;;;   (las-file) - The currently loaded *.las file.
-;;;
-;;; Returns:
-;;;   None.
-;;;
-;;; ToDo:
-;;;   (S.P.) @(01-05-16) - Update the behavior of default-filename to act more like a
-;;;                        custom-file-dir-p
-;;;   (S.P.) @(01-03-16) - Consider using cond to split up statements and allow for output upon
-;;;                        success
-;;;
-;;; Revisions:
-;;; ========|
-(efun HGG:Convert-Ls3-File:Process-Files (file-list default-filename / ls3-file las-filename las-file)
+;;(f* HGG/ConvertLayerSetFile/HGG:Convert-Ls3-File:Process-Files
+;;; NAME
+;;;   HGG:Convert-Ls3-File:Process-Files -- Recusively processeses the ls3 files.
+;;; PURPOSE
+;;;   From a file list using the default filename, this function will recursively go through
+;;;   the file list and create a LAS type file for each member in the list.
+;;; DECLARATION
+(defun HGG:Convert-Ls3-File:Process-Files (file-list default-filename / ls3-file las-filename las-file)
+;;; ARGUMENTS
+;;;   file-list -- List of files to convert from ls3 to las.
+;;;   default-filename -- A predicate wannabe used to determine if the default filename
+;;; VARIABLES
+;;;   ls3-file -- The ls3-file being read to create the las-file.
+;;;   las-filename -- The path of the las-file to write to.
+;;;   las-file -- The las-file that is being written to.
+;;; EXAMPLE
+;;;   (HGG:CONVERT-Ls3-File:Process-Files new_file-list is_default)
+;;; CALLS
+;;;   HGG:CONVERT-Ls3-File:Process-Files
+;;;   HGG:Convert-Ls3-File:Process-File
+;;; CALLED BY
+;;;   HGG:CONVERT-Ls3-File:Process-Files
+;;;   HGG:Convert-Ls3-File
+;;; TODO
+;;;   S.P.@01-05-16 -- Update the behavior of default-filename to act more like a
+;;;                    custom-file-dir-p.
+;;;   S.P.@01-03-16 -- Consider using cond to split up statements and allow for output upon
+;;;                    success.
+;;; SOURCE
   (if (and (/= file-list nil) (setq ls3-file (open (car file-list) "r")a))
     (progn
       (print (concatenate "\nLS3 File \"" ls3-file "\" loaded."))
@@ -163,38 +148,40 @@
     (HGG:Convert-Ls3-File:Process-Files (cdr file-list) default-filename); Recursive call
     )
   )
+;;)
 
-;;; |========
-;;;   Recursively iterates through the lines in ls3-file to process.
-;;;
-;;;   [Multi-line summary]
-;;;
-;;; Calls:
-;;;   (HGG:Convert-Ls3-File:Ls3-State:Parse-string)
-;;;   (HGG:Convert-Ls3-File:Ls3-State:State-Print)
-;;;   (HGG:Read-To-Delimiter)
-;;;
-;;; Parameters:
-;;;   (ls3-file) - The *.ls3 file to be read.
-;;;   (las-file) - The *.las file to be written to.
-;;;
-;;; Local Variables:
-;;;   (line) - The current line being read in ls3-file.
-;;;   (layers) - A list of all of the layers in the drawing with their corresponing layer-state.
-;;;   (layer-state) - The layer-state in LAS format. See documentation for function
-;;;                   HGG:Convert-Ls3-File:Ls3-State:From-Ls3 for format.
-;;;
-;;; Returns:
-;;;   None.
-;;;
-;;; ToDo:
-;;;   (S.P.) @(01-05-16) - Make sure it works!
-;;;   (S.P.) @(01-05-16) - Make layer-state a LAS type state. Right now it is a LS3 type state
-;;;                        because it is calling HGG:Convert-Ls3-File:Ls3-State:Parse-string
-;;;                        which returns a LS3 type state!
-;;;
-;;; ========|
+;;(f* HGG/ConvertLayerSetFile/HGG:Convert-Ls3-File:Process-Files
+;;; NAME
+;;;   HGG:Convert-Ls3-File:Process-Files -- From a ls3 file, builds a las file.
+;;; PURPOSE
+;;;   Writes to las-file in the format specified in NOTES by parsing each line in the ls3-file.
+;;;   This function will also princ an error message when the parsing has failed somehow and will
+;;;   print the layerstate with the failed values set to the default found in HGG:+default-state+.
+;;; DECLARATION
 (defun HGG:Convert-Ls3-File:Process-File (ls3-file las-file / line layers layer-state)
+;;; ARGUMENTS
+;;;   ls3-file -- The *.ls3 file to be read.
+;;;   las-file -- The *.las file to be written to.
+;;; VARIABLES
+;;;   line -- The current line being read in ls3-file.
+;;;   layers -- A list of all of the layers in the drawing with their corresponing layer-state.
+;;;   layer-state -- The layer-state in LAS format. See documentation for function
+;;;                  HGG:Convert-Ls3-File:Ls3-State:From-Ls3 for format.
+;;; EXAMPLE
+;;;   (HGG:Convert-Ls3-File:Process-File ls3-file-to-read-from las-file-to-write-to)
+;;; CALLS
+;;;   HGG:Convert-Ls3-File:Ls3-State:Parse-string
+;;;   HGG:Convert-Ls3-File:Ls3-State:State-Print
+;;;   HGG:Read-To-Delimiter
+;;; CALLED BY
+;;;   HGG:CONVERT-Ls3-File:Process-Files
+;;; NOTES
+;;; TODO
+;;;   S.P.@01-05-16 -- Make sure it works!
+;;;   S.P.@01-05-16 -- Make layer-state a LAS type state. Right now it is a LS3 type state
+;;;                    because it is calling HGG:Convert-Ls3-File:Ls3-State:Parse-string
+;;;                    which returns a LS3 type state!
+;;; SOURCE
   (while (setq line (read-line ls3-file))
     (progn
       ;; Are we on the first line?
@@ -235,135 +222,134 @@
       )
     )
   )
+;;)
 
-;;; Creates a layer state in LS3 format from a parsed strin and returns that layer state.
-;;;
-;;; The LS3 format is based upon the format of a layer state in the *.ls3 file. Reverse
-;;; engineering the format and putting it into a list format yields the below form of a list.
-;;; Because AutoLISP is a shitty language, the list is being used much like a struct with the
-;;; location of each member having a very important identiy.
-;;;
-;;; The typical structure of string found in a *.ls3 file:
-;;;
-;;;
-;;; The Structure of an ls3-state (see +default-ls3-state+ for default values):
-;;; (nth 0 ls3-state) :> "Layer name"
-;;; (nth 1 ls3-state) :> Integer being used for bit representation of states.
-;;;                      The bits are as follows:
-;;;                        1 = Is Frozen
-;;;                        2 = Is New VP Frozen
-;;;                        4 = Is Locked
-;;;                        8 = N/A
-;;;                        16 = Is Xref Dependent
-;;;                        32 = N/A
-;;;                        64 = Is Plottable
-;;;                        128 = Is VP Frozen
-;;; (nth 2 ls3-state) :> Integer representing color of layer from 1 - 255 and * -1 if the layer
-;;;                      is off.
-;;; (nth 3 ls3-state) :> Linetype
-;;; (nth 4 ls3-state) :> Line Weight
-;;; (nth 5 ls3-state) :> Plot Style
-;;; (nth 6 ls3-state) :> Is Current Layer (1 if it is, 0 if not)
-;;; (nth 7 ls3-state) :> Error Code as follows:
-;;;                        0 = No Error
-;;;                        1 = Invalid amount size (# of states) for Layer State
-;;;                        2 = Bad value for a state (i.e. color > 255) with # being a state
-;;;                            numbered 0 - 6.
-;;;                        3 = Multiple states were found to be invalid.
-;;;                        4 = Unknown error
-;;;
-;;; Calls:
-;;;    (HGG:Convert-Ls3-File:Ls3-State:Check-For-Errors)
-;;;    (HGG:Read-To-Delimiter)
-;;;
-;;; Parameters:
-;;;    (string) - The string to be parsed representing the layer state.
-;;;
-;;; Local Variables:
-;;;    (ls3-state) - An LS3 type state.
-;;;
-;;; Returns:
-;;;    The layer state in a LAS type format. See HGG:Convert-Ls3-File:Ls3-State:From-Ls3 for more
-;;;    info.
-;;;
-;;; ToDo:
-;;;
-;;; Revisions:
-;;;    (S.P.) @(01-05-16) - For reducing complexity, have this function return the layer state
-;;;                         in a LS3 type format. Makes it more testable as well.
-;;;
-;;; Code:
+;;(f* HGG/ConvertLayerSetFile/HGG:Convert-Ls3-File:Ls3-State:Parse-String
+;;; NAME
+;;;   HGG:Convert-Ls3-File:Ls3-State:Parse-String
+;;; PURPOSE
+;;;   Builds a LS3 type state from a string to parse. This function is used for parsing invdividual
+;;;   LS3 type strings into a ls3 type layer state list.
+;;; DECLARATION
 (defun HGG:Convert-Ls3-File:Ls3-State:Parse-string (string / ls3-state)
+;;; ARGUMENTS
+;;;   string -- The string to be parsed representing the layer state.
+;;; VARIABLES
+;;;   ls3-state -- An LS3 type state.
+;;; RETURN VALUE
+;;;   The layer state in a LAS type format. See HGG:Convert-Ls3-File:Ls3-State:From-Ls3 for more
+;;;   info.
+;;; EXAMPLE
+;;;   (HGG:Convert-Ls3-File:Ls3-State:Parse-String line-from-ls3-file)
+;;; CALLS
+;;;   HGG:Convert-Ls3-File:Ls3-State:Check-For-Errors
+;;;   HGG:Read-To-Delimiter
+;;; CALLED BY
+;;;   HGG:Convert-Ls3-File:Process-File
+;;; NOTES
+;;;   The LS3 format is based upon the format of a layer state in the *.ls3 file. Reverse
+;;;   engineering the format and putting it into a list format yields the below form of a list.
+;;;   Because AutoLISP is a shitty language, the list is being used much like a struct with the
+;;;   location of each member having a very important identiy.
+;;;
+;;;   The typical structure of string found in a *.ls3 file:
+;;;
+;;;
+;;;   The Structure of an ls3-state (see +default-ls3-state+ for default values):
+;;;   (nth 0 ls3-state) :> "Layer name"
+;;;   (nth 1 ls3-state) :> Integer being used for bit representation of states.
+;;;                        The bits are as follows:
+;;;                          1 = Is Frozen
+;;;                          2 = Is New VP Frozen
+;;;                          4 = Is Locked
+;;;                          8 = N/A
+;;;                          16 = Is Xref Dependent
+;;;                          32 = N/A
+;;;                          64 = Is Plottable
+;;;                          128 = Is VP Frozen
+;;;   (nth 2 ls3-state) :> Integer representing color of layer from 1 - 255 and * -1 if the layer
+;;;                        is off.
+;;;   (nth 3 ls3-state) :> Linetype
+;;;   (nth 4 ls3-state) :> Line Weight
+;;;   (nth 5 ls3-state) :> Plot Style
+;;;   (nth 6 ls3-state) :> Is Current Layer (1 if it is, 0 if not)
+;;;   (nth 7 ls3-state) :> Error Code as follows:
+;;;                          0 = No Error
+;;;                          1 = Invalid amount size (# of states) for Layer State
+;;;                          2 = Bad value for a state (i.e. color > 255) with # being a state
+;;;                              numbered 0 - 6.
+;;;                          3 = Multiple states were found to be invalid.
+;;;                          4 = Unknown error
+;;; TODO
+;;;   S.P.@01-05-16 -- For reducing complexity, have this function return the layer state
+;;;                    in a LS3 type format. Makes it more testable as well.
+;;;   S.P.@01-06-16 -- Try to remove the local variable and just build the list to check as you go.
+;;; SOURCE
   (while (not (equal string "\n"))
     (setq ls3-state (append ls3-state (HGG:Read-To-Delimiter string 09)))
     )
   (HGG:Convert-Ls3-File:Ls3-State:Check-For-Errors ls3-state)
   )
+;;)
 
+;;(f* HGG/ConvertLayerSetFile/HGG:Convert-Ls3-File:Ls3-State:Check-For-Errors
+;;; NAME
+;;;   HGG:Convert-Ls3-File:Ls3-State:Check-For-Errors
+;;; PURPOSE
+;;;   Validates a LAS type later-state and sets the error code on the returned las-state.
+;;; DECLARATION
 (defun HGG:Convert-Ls3-File:Ls3-State:Check-For-Errors (ls3-state is_new_state
                                    / _err:no-error_ _err:invalid-size_
-                                   _err:bad-value_ _state:max-length_ _state:max-length_
+                                   _err:bad-value_ _state:max-length_ _state:factors_
                                    _state:bit-max_ _state:bit-min_ _state:color-max_ _state:color-min_)
-  ;; Validates a LAS type later-state and sets the error code on the returned las-state.
-  ;;
-  ;; The LAS type structure has an error code stored in (nth 7 las-state). This is the error code
-  ;; that is set. See [FUNC] for more detail on the LAS type structure.
-  ;;
-  ;; Excerpt:
-  ;; (nth 7 ls3-state) :> Error Code as follows:
-  ;;                        0 = No Error
-  ;;                        1 = Invalid amount size (# of states) for Layer State
-  ;;                        2 = Bad value for a state (i.e. color > 255) with # being a state
-  ;;                            numbered 0 - 6.
-  ;;                        3 = Multiple states were found to be invalid.
-  ;;                        4 = Unknown error
-  ;;
-  ;; Note that if an error was found in the las-state, the states are set to their default values.
-  ;; This may change in the future if the user wishes to give permision on this feature.
-  ;;
-  ;; Calls:
-  ;;    (HGG:Get-First-N)
-  ;;    (HGG:Replace-N)
-  
-  ;; Global Variables used:
-  ;;    (+default-state_) - The default values for a LS3 type layer state.
-  ;;
-  ;; Parameters:
-  ;;    (ls3-state) - The layer -state in LS3 Type format.
-  ;;    (is_new_state) - A predicate to indicate whether this is a brand new state or not.
-  ;;
-  ;; Local Variables:
-  ;;    None.
-  ;;
-  ;; Local Constants:
-  ;;    (_err:no-error_) -
-  ;;    (_err:invalid-size_) -
-  ;;    (_err:bad-value_) -
-  ;;    (_state:max-length_) -
-  ;;    (_state:max-length_) -
-  ;;    (_state:bit-max_) -
-  ;;    (_state:bit-min_) -
-  ;;    (_state:color-max_) -
-  ;;    (_state:color-min_) -
-  ;;
-  ;; Returns
-  ;;    The layer state in type LS3 format with an error flag set and states defaulted to normal
-  ;;    if an error was found.
-  ;;
-  ;; ToDo:
-  ;;    (S.P) @(01-07-16) - Remove dependency on "is_new_state".
-  ;;    (S.P.) @01-06-2016) - Make local constants global.
-  ;;
-  ;; Revisions:
-  ;;
-  ;; Code:
+;;; ARGUMENTS
+;;;   ls3-state -- The layer -state in LS3 Type format.
+;;;   is_new_state -- A predicate to indicate whether this is a brand new state or not.
+;;; VARIABLES
+;;;   _err:no-error_ --
+;;;   _err:invalid-size_ --
+;;;   _err:bad-value_ --
+;;;   _state:max-length_ --
+;;;   _state:factors_ --
+;;;   _state:bit-max_ --
+;;;   _state:bit-min_ --
+;;;   _state:color-max_ --
+;;;   _state:color-min_ --
+;;; RETURN VALUE
+;;;   The layer state in type LS3 format with an error flag set and states defaulted to normal
+;;;   if an error was found.
+;;; EXAMPLE
+;;; CALLS
+;;;   HGG:Get-First-N
+;;;   HGG:Replace-N
+;;;   +default-state+
+;;; CALLED BY
+;;; NOTES
+;;;   The LAS type structure has an error code stored in (nth 7 las-state). This is the error code
+;;;   that is set. See [FUNC] for more detail on the LAS type structure.
+;;;
+;;;   Excerpt:
+;;;   (nth 7 ls3-state) :> Error Code as follows:
+;;;                          0 = No Error
+;;;                          1 = Invalid amount size (# of states) for Layer State
+;;;                          2 = Bad value for a state (i.e. color > 255) with # being a state
+;;;                              numbered 0 - 6.
+;;;                          3 = Multiple states were found to be invalid.
+;;;                          4 = Unknown error
+;;;
+;;;   Note that if an error was found in the las-state, the states are set to their default values.
+;;;   This may change in the future if the user wishes to give permision on this feature.
+;;; TODO
+;;;   S.P.@01-07-16 -- Remove dependency on "is_new_state".
+;;;   S.P.@01-06-16 -- Make local constants global.
+;;; SOURCE
   (setq _err:no-error_ 0)
   (setq _err:invalid-size_ 1)
   (setq _err:bad-value_ 20)
   (setq _state:max-length_ 8)
   (if (= is_new_state 1) (1- _state:max-length_))
-  (setq _state:max-length_ (1 2 4 16 64 128))
-  (setq _state:bit-max_ (+ _state:max-length_))
+  (setq _state:factors_ (1 2 4 16 64 128))
+  (setq _state:bit-max_ (+ _state:factors_))
   (setq _state:bit-min_ 0)
   (setq _state:color-max_ 255)
   (setq _state:color-min_ 0)
@@ -450,46 +436,41 @@
      )
     )
   )
+;;)
 
+;;(f* HGG/ConvertLayerSetFile/HGG:Convert-Ls3-File:Ls3-State:From-Ls3
+;;; NAME
+;;;   HGG:Convert-Ls3-File:Ls3-State:From-Ls3
+;;; PURPOSE
+;;;   Converts a ls3 type layer state to a LAS type layer state.
+;;; DECLARATION
 (defun HGG:Convert-Ls3-File:Ls3-State:From-Ls3 (ls3-state)
-  """
-  Converts a ls3 type layer state to a LAS type layer state.
-
-  The LAS type layer state has the following structure:
-    ls3-state[0] = Layer Name as a string.
-    ls3-state[1] = Layer state as bits where bits are as follows:
-                    1 = Is Off
-                    2 = Is Frozen
-                    4 = Is Locked
-                    8 = Is Plottable
-                    16 = Is New VP Frozen
-                    32 = Is Vp Frozen
-                    64 = N/A
-                    128 = N/A
-    ls3-state[2] = Color of layer (1 - 255)
-    ls3-state[3] = Line weight in 100's of mm, i.e. 211 = 2.11mm
-    ls3-state[4] = Line Type as a string.
-    ls3-state[5] = Plot Style
-    ls3-state[6] = Transperancy
-    ls3-state[7] = Error Flag
-  """
-  ;; Converts a LS3 type layer-state to a LAS type layer-state.
-  ;;
-  ;; [Multi-line summary]
-  ;;
-  ;; Calls:
-  ;;
-  ;; Parameters:
-  ;;
-  ;; Local Variables:
-  ;;
-  ;; Returns:
-  ;;
-  ;; ToDo:
-  ;;
-  ;; Revisions:
-  ;;
-  ;; Code:
+;;; ARGUMENTS
+;;;   ls3-state --
+;;; RETURN VALUE
+;;;   A LAS type layer state that has the following structure:
+;;;     (nth 0 ls3-state) :> Layer Name as a string.
+;;      (nth 1 ls3-state) :> Layer state as bits where bits are as follows:
+;;                             1 = Is Off
+;;                             2 = Is Frozen
+;;                             4 = Is Locked
+;;                             8 = Is Plottable
+;;                             16 = Is New VP Frozen
+;;                             32 = Is Vp Frozen
+;;                             64 = N/A
+;;                             128 = N/A
+;;      (nth 2 ls3-state) :> Color of layer (1 - 255)
+;;      (nth 3 ls3-state) :> Line weight in 100's of mm, i.e. 211 = 2.11mm
+;;      (nth 4 ls3-state) :> Line Type as a string.
+;;      (nth 5 ls3-state) :> Plot Style
+;;      (nth 6 ls3-state) :> Transperancy
+;;      (nth 7 ls3-state) :> Error Flag
+;;; EXAMPLE
+;;; CALLS
+;;; CALLED BY
+;;; NOTES
+;;; TODO
+;;; SOURCE
   (append
     (car ls3-state); name
     (logior; Bitwise math for state:
@@ -508,26 +489,26 @@
     (last ls3-state); error flag
     )
   )
+;;)
 
+;;(f* HGG/ConvertLayerSetFile/HGG:Convert-Ls3-File:Ls3-State:State-Print
+;;; NAME
+;;;   HGG:Convert-Ls3-File:Ls3-State:State-Print
+;;; PURPOSE
+;;;   Prints a layer state to the AutoCAD format with the appropriate '\n's. Returns nil on error.
+;;; DECLARATION
 (defun HGG:Convert-Ls3-File:Ls3-State:State-Print (ls3-state)
-  "Prints a layer state to the AutoCAD format with the appropriate '\n's. Returns nil on error"
-  ;; [One-line summary]
-  ;;
-  ;; [Multi-line summary]
-  ;;
-  ;; Calls:
-  ;;
-  ;; Parameters:
-  ;;
-  ;; Local Variables:
-  ;;
-  ;; Returns:
-  ;;
-  ;; ToDo:
-  ;;
-  ;; Revisions:
-  ;;
-  ;; Code:
+;;; ARGUMENTS
+;;;   ls3-state --
+;;; RETURN VALUE
+;;; EXAMPLE
+;;; CALLS
+;;; CALLED BY
+;;; NOTES
+;;; TODO
+;;;   S.P.@01-08-16 -- Finish Function
+;;; SOURCE
+;;)
   (setq n 0)
   (foreach state ls3-state
     (progn
@@ -542,89 +523,6 @@
       )
     )
   )
-
-;;; ---------------------------------------------------------------------------
-;;; Helper Function(s):
-;;; ---------------------------------------------------------------------------
-(defun HGG:Get-First-N (lst n-max / n)
-  "Returns the first n-max elements of a list."
-  ;; [One-line summary]
-  ;;
-  ;; [Multi-line summary]
-  ;;
-  ;; Calls:
-  ;;
-  ;; Parameters:
-  ;;
-  ;; Local Variables:
-  ;;
-  ;; Returns:
-  ;;
-  ;; ToDo:
-  ;;
-  ;; Revisions:
-  ;;
-  ;; Code:
-   (setq n -1)
-   (repeat (>= n (- n-max 1))
-     (progn
-       (1+ n)
-       (append (nth n lst))
-       )
-     )
-  )
-
-(defun HGG:Replace-N (lst new-value nth-element )
-  "Returns a list with the n'th_element replaced with new-value"
-  ;; [One-line summary]
-  ;;
-  ;; [Multi-line summary]
-  ;;
-  ;; Calls:
-  ;;
-  ;; Parameters:
-  ;;
-  ;; Local Variables:
-  ;;
-  ;; Returns:
-  ;;
-  ;; ToDo:
-  ;;
-  ;; Revisions:
-  ;;
-  ;; Code:
-  (append
-    (HGG:Get-First-N lst (- nth-element 1))
-    new-value
-    (HGG:Get-First-N (reverse lst) (- (length lst) nth-element))
-    )
-  )
-
-(defun HGG:Read-To-Delimiter (string delimiter-character-code / parsed-string delimiter-position)
-  "Returns the string up to delimiter_code and removes it from string."
-  ;; [One-line summary]
-  ;;
-  ;; [Multi-line summary]
-  ;;
-  ;; Calls:
-  ;;
-  ;; Parameters:
-  ;;
-  ;; Local Variables:
-  ;;
-  ;; Returns:
-  ;;
-  ;; ToDo:
-  ;;
-  ;; Revisions:
-  ;;
-  ;; Code:
-  (setq delimiter-position (vl-string-position delimiter-character-code string))
-  (setq parsed-string (substr string 1 delimiter-position))
-  (setq string (substr string (+ 2 delimiter-position) (strlen string)))
-  parsed-string
-  )
-
 ;; Program continuation:
 (vl-load-com)
 (princ)

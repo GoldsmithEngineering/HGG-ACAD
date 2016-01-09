@@ -3,41 +3,49 @@
 items:
     NAME
     COPYRIGHT
+    LICENSE
+    TAGS
     PURPOSE
     AUTHOR
     CREATION DATE
     MODIFICATION HISTORY
+    STATUS
     DECLARATION
     ARGUMENTS
     VARIABLES
     RETURN VALUE
     EXAMPLE
+    CALLS
+    CALLED BY
     NOTES
     BUGS
     TODO
     SEE ALSO
-    CALLS
-    CALLED BY
     SOURCE
 item order:
     NAME
     COPYRIGHT
+    LICENSE
+    TAGS
     PURPOSE
     AUTHOR
     CREATION DATE
     MODIFICATION HISTORY
+    STATUS
+    DECLARATION
     ARGUMENTS
     VARIABLES
     RETURN VALUE
     EXAMPLE
+    CALLS
+    CALLED BY
     NOTES
     BUGS
     TODO
     SEE ALSO
-    CALLS
-    CALLED BY
     SOURCE
 source items:
+    SOURCE
     DECLARATION
 preformatted items:
 format items:
