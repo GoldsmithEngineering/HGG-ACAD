@@ -306,15 +306,15 @@
 ;;;   ls3-state -- The layer -state in LS3 Type format.
 ;;;   is_new_state -- A predicate to indicate whether this is a brand new state or not.
 ;;; VARIABLES
-;;;   _err:no-error_ --
-;;;   _err:invalid-size_ --
-;;;   _err:bad-value_ --
-;;;   _state:max-length_ --
-;;;   _state:factors_ --
-;;;   _state:bit-max_ --
-;;;   _state:bit-min_ --
-;;;   _state:color-max_ --
-;;;   _state:color-min_ --
+;;;   _err:no-error_ -- (Constant) The error code for No Error.
+;;;   _err:invalid-size_ -- (Constant) The error code for a layer sate of invalid size.
+;;;   _err:bad-value_ -- (Constant) The error code for a layer state with a bad value.
+;;;   _state:max-length_ -- (Constant) The max number of properties in a layer state.
+;;;   _state:factors_ -- (Constant) The possible bits that could be on in the layer state.
+;;;   _state:bit-max_ -- (Constant) The maximum value that a layer state bit could have.
+;;;   _state:bit-min_ -- (Constant) The minimum value that a layer state bit could have.
+;;;   _state:color-max_ -- (Constant) The maximum value that a color in a layer state could have.
+;;;   _state:color-min_ -- (Constant) The minimum value that a color in a layer state could have.
 ;;; RETURN VALUE
 ;;;   The layer state in type LS3 format with an error flag set and states defaulted to normal
 ;;;   if an error was found.
@@ -446,47 +446,53 @@
 ;;; DECLARATION
 (defun HGG:Convert-Ls3-File:Ls3-State:From-Ls3 (ls3-state)
 ;;; ARGUMENTS
-;;;   ls3-state --
+;;;   ls3-state -- An LS3 type layer state to be converted.
 ;;; RETURN VALUE
 ;;;   A LAS type layer state that has the following structure:
-;;;     (nth 0 ls3-state) :> Layer Name as a string.
-;;      (nth 1 ls3-state) :> Layer state as bits where bits are as follows:
-;;                             1 = Is Off
-;;                             2 = Is Frozen
-;;                             4 = Is Locked
-;;                             8 = Is Plottable
-;;                             16 = Is New VP Frozen
-;;                             32 = Is Vp Frozen
-;;                             64 = N/A
-;;                             128 = N/A
-;;      (nth 2 ls3-state) :> Color of layer (1 - 255)
-;;      (nth 3 ls3-state) :> Line weight in 100's of mm, i.e. 211 = 2.11mm
-;;      (nth 4 ls3-state) :> Line Type as a string.
-;;      (nth 5 ls3-state) :> Plot Style
-;;      (nth 6 ls3-state) :> Transperancy
-;;      (nth 7 ls3-state) :> Error Flag
+;;;     (nth # las-state) :> [group code], [value]
+;;;     (nth 0 las-state) :>   8, Layer Name as a string.
+;;      (nth 1 las-state) :>  90, Layer state saved as a bit where bit values are as follows:
+    ;;                             1 = Is Off
+    ;;                             2 = Is Frozen
+    ;;                             4 = Is Locked
+    ;;                             8 = Is Plottable
+    ;;                             16 = Is New VP Frozen
+    ;;                             32 = Is Vp Frozen
+    ;;                             64 = N/A
+    ;;                             128 = N/A
+;;      (nth 2 las-state) :>  62, Color of layer (1 - 255)
+;;      (nth 3 las-state) :> 370, Line weight in 100's of mm, i.e. 211 = 2.11mm
+;;      (nth 4 las-state) :>   6, Line Type as a string.
+;;      (nth 5 las-state) :>   2, Plot Style
+;;      (nth 6 las-state) :> 440, Transperancy
+;;      (nth 7 las-state) :> Error Flag
 ;;; EXAMPLE
+;;;   (setq ls3-state (list "Test layer" 64 7 "Continuous" 211 Color_7 0 0))
+;;;   (princ (HGG:Convert-Ls3-File:Ls3-State:From-Ls3 ls3-state))
+;;;   ;:> ((8 "Test Layer") (90 8) (62 7) (370 211) (6 "Continuous) (2 Color_7) (440 33554687) 0)
 ;;; CALLS
 ;;; CALLED BY
 ;;; NOTES
 ;;; TODO
 ;;; SOURCE
   (append
-    (car ls3-state); name
-    (logior; Bitwise math for state:
-        (> (nth 2 ls3-state) 0)
-        (lsh (logand ls3-state 1) 1)
-        (logand ls3-state 4)
-        (lsh (logand ls3-state 64) -3)
-        (lsh (logand ls3-state 2) 3)
-        (lsh (logand ls3-state 128) -2)
-      )
-    (abs (nth 2 ls3-state)); color
-    (nth 4 ls3-state); line weight
-    (nth 3 ls3-state); line type
-    (nth 5 ls3-state); plot style
-    33554687; Transperancy assumed to be 0.
-    (last ls3-state); error flag
+    (list 8 (car ls3-state)); Layer Name with group code.
+    (list 90; Group code
+          (logior; Bitwise math for state:
+            (> (nth 2 ls3-state) 0)
+            (lsh (logand ls3-state 1) 1)
+            (logand ls3-state 4)
+            (lsh (logand ls3-state 64) -3)
+            (lsh (logand ls3-state 2) 3)
+            (lsh (logand ls3-state 128) -2)
+            )
+          )
+    (list 62 (abs (nth 2 ls3-state))); Layer color with group code.
+    (list 370 (nth 4 ls3-state)); Layer line weight with group code.
+    (list 6 (nth 3 ls3-state)); Layer line type with group code.
+    (list 2 (nth 5 ls3-state)); Layer plot style with group code.
+    (list 440 33554687); Layer transperancy assumed to be 0 with group code.
+    (list (last ls3-state)); error flag
     )
   )
 ;;)
@@ -497,11 +503,39 @@
 ;;; PURPOSE
 ;;;   Prints a layer state to the AutoCAD format with the appropriate '\n's. Returns nil on error.
 ;;; DECLARATION
-(defun HGG:Convert-Ls3-File:Ls3-State:State-Print (ls3-state)
+(defun HGG:Convert-Ls3-File:Ls3-State:State-Print (las-state / _state:printable-attribute-size_
+                                                             attribute string-to-return)
 ;;; ARGUMENTS
-;;;   ls3-state --
+;;;   las-state -- The layer state to print.
+;;; VARIABLES
+;;;   _state:printable-attribute-size_ -- (Constant) The size of an attribute that can be printed.
+;;;                                       This should always be two because a LAS type state with
+;;;                                       an printable attribute is defined as:
+;;;                                         ([group code] [value])
+;;;                                       An attribute without a group code is just meta data.
+;;;   attribute -- An attribute of the layer state ie. the layer name.
+;;;   string-to-return -- The string to return.
 ;;; RETURN VALUE
+;;;   A giant string that represents the layer to be printed to stdout.
 ;;; EXAMPLE
+;;;   (setq ls3-state (list "Test layer" 64 7 "Continuous" 211 Color_7 0 0))
+;;;   (setq las-state (HGG:Convert-Ls3-File:Ls3-State:From-Ls3 ls3-state))
+;;;   (princ (HGG:Convert-Ls3-File:Ls3-State:State-Print))
+;;;   ;:> 
+;;;   ;:> 8
+;;;   ;:> Test Layer
+;;;   ;:> 90
+;;;   ;:> 8
+;;;   ;:> 62
+;;;   ;:> 7
+;;;   ;:> 370
+;;;   ;:> 211
+;;;   ;:> 6
+;;;   ;:> Continuous
+;;;   ;:> 2
+;;;   ;:> Color_7
+;;;   ;:> 440
+;;;   ;:> 33554687
 ;;; CALLS
 ;;; CALLED BY
 ;;; NOTES
@@ -509,19 +543,15 @@
 ;;;   S.P.@01-08-16 -- Finish Function
 ;;; SOURCE
 ;;)
-  (setq n 0)
-  (foreach state ls3-state
-    (progn
-      (cond
-        ((= n 1) (print (strcat "8\n" state)))
-        ((= n 2)
-          (progn
-            )
-        )
-        )
-      (setq n (1+ n))
+  (setq _state:printable-attribute-size_ 2)
+  (setq string-to-return "")
+  (foreach attribute las-state
+    (if (= (length attribute  _state:printable-attribute-size_)
+      (setq (strcat string-to-return "\n" (vl-princ-to-string (car attribute)) "\n"
+                    (vl-princ-to-string (cdr attribute)))
       )
     )
+  (string-to-return)
   )
 ;; Program continuation:
 (vl-load-com)

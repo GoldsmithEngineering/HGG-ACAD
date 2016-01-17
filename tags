@@ -22,9 +22,10 @@ HGG:Convert-Ls3-File:Ls3-State:From-Ls3	.\source\ConvertLayerSetFile.lsp	/^(defu
 HGG:Convert-Ls3-File:Ls3-State:Parse-string	.\source\ConvertLayerSetFile.lsp	/^(defun HGG:Convert-Ls3-File:Ls3-State:Parse-string (string \/ ls3-state)$/;"	f
 HGG:Convert-Ls3-File:Ls3-State:State-Print	.\source\ConvertLayerSetFile.lsp	/^(defun HGG:Convert-Ls3-File:Ls3-State:State-Print (ls3-state)$/;"	f
 HGG:Convert-Ls3-File:Process-File	.\source\ConvertLayerSetFile.lsp	/^(defun HGG:Convert-Ls3-File:Process-File (ls3-file las-file \/ line layers layer-state)$/;"	f
-HGG:Get-First-N	.\source\ConvertLayerSetFile.lsp	/^(defun HGG:Get-First-N (lst n-max \/ n)$/;"	f
-HGG:Read-To-Delimiter	.\source\ConvertLayerSetFile.lsp	/^(defun HGG:Read-To-Delimiter (string delimiter-character-code \/ parsed-string delimiter-position)$/;"	f
-HGG:Replace-N	.\source\ConvertLayerSetFile.lsp	/^(defun HGG:Replace-N (lst new-value nth-element )$/;"	f
+HGG:Convert-Ls3-File:Process-Files	.\source\ConvertLayerSetFile.lsp	/^(defun HGG:Convert-Ls3-File:Process-Files (file-list default-filename \/ ls3-file las-filename las-file)$/;"	f
+HGG:Get-First-N	.\source\HelperFunc.lsp	/^(defun HGG:Get-First-N (lst front-n \/ n)$/;"	f
+HGG:Read-To-Delimiter	.\source\HelperFunc.lsp	/^(defun HGG:Read-To-Delimiter (string delimiter-character-code \/ parsed-string delimiter-position)$/;"	f
+HGG:Replace-N	.\source\HelperFunc.lsp	/^(defun HGG:Replace-N (lst new-value nth-element )$/;"	f
 LM:getfiles	.\source\modules\GetFilesv1-4.lsp	/^(defun LM:getfiles ( msg def ext \/ *error* dch dcl des dir dirdata lst rtn )$/;"	f
 LM:getfiles:browseforfolder	.\source\modules\GetFilesv1-4.lsp	/^(defun LM:getfiles:browseforfolder ( msg dir flg \/ err fld pth shl slf )$/;"	f
 LM:getfiles:checkredirect	.\source\modules\GetFilesv1-4.lsp	/^(defun LM:getfiles:checkredirect ( dir \/ itm pos )$/;"	f
