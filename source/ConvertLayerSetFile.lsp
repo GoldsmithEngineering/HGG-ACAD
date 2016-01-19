@@ -67,6 +67,12 @@
 ;;; TODO
 ;;;   S.P.@01-07-16 -- Refactor to include "HGG" mock name space.
 ;;)
+(load "GetFilesv1-4.lsp"
+      (progn
+        (princ "ERROR: GetFilesv1-4.lsp not found in load path. Function will now exit.")
+        (exit)
+        )
+      )
 
 ;;(f* HGG/ConvertLayerSetFile/HGG:Convert-Ls3-File
 ;;; NAME
@@ -76,23 +82,23 @@
 ;;;   from .ls3 to .las. Then it calls a sub function (HGG:Convert-Ls3-File:Process-Files) which
 ;;;   iterates through the list of files and converts them appropriately.
 ;;; DECLARATION
-(defun HGG:Convert-Ls3-File ( / file-list default-filename)
+(defun HGG:Convert-Ls3-File ( / file-list custom-dir-p)
 ;;; VARIABLES:
+;;;   ans -- The answer for input from the user.
 ;;;   file-list -- The list of ls3 files to process.
-;;;   default-filename -- 'nil' if a custom file directory is provided.
+;;;   custom-dir-p -- 'nil' if a custom file directory is requested.
 ;;; EXAMPLE
 ;;;   :> Command: HGG:CONVERT-LS3-FILE
 ;;; CALLS
 ;;;   HGG:Convert-Ls3-File:Process-Files
 ;;;   LM:GETFILES
 ;;; TODO
-;;;   S.P.@01-05-16 -- Update the behavior of default-filename to act more like a custom-file-dir-p
 ;;; SOURCE
-  (init 1 "y" "n")
-  (set ans (getkword "/nCreate files in respective directories? [Y]es [N]o:"))
-  (setq default-filename (eq ans "y"))
+  (initget "Yes" "No")
+  (set ans (getkword "/nCreate files in respective directories? [Y]es [N]o, default is Yes:"))
+  (setq custom-dir-p (if (or (= ans "Yes") (not ans) ) nil ans))
   (setq file-list (LM:GETFILES "Layerset files to convert" "" "ls3"))
-  (HGG:Convert-Ls3-File:Process-Files file-list default-filename)
+  (HGG:Convert-Ls3-File:Process-Files file-list custom-dir-p)
   )
 ;;)
 
