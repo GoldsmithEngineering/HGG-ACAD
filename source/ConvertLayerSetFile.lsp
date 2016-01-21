@@ -82,11 +82,11 @@
 ;;;   from .ls3 to .las. Then it calls a sub function (HGG:Convert-Ls3-File:Process-Files) which
 ;;;   iterates through the list of files and converts them appropriately.
 ;;; DECLARATION
-(defun HGG:Convert-Ls3-File ( / file-list custom-dir-p)
+(defun HGG:Convert-Ls3-File ( / ans file-list use-custom-dir-p)
 ;;; VARIABLES:
 ;;;   ans -- The answer for input from the user.
 ;;;   file-list -- The list of ls3 files to process.
-;;;   custom-dir-p -- 'nil' if a custom file directory is requested.
+;;;   use-custom-dir-p -- The path of the custom directory or 'nil' if none was requested.
 ;;; EXAMPLE
 ;;;   :> Command: HGG:CONVERT-LS3-FILE
 ;;; CALLS
@@ -95,10 +95,11 @@
 ;;; TODO
 ;;; SOURCE
   (initget "Yes" "No")
-  (set ans (getkword "/nCreate files in respective directories? [Y]es [N]o, default is Yes:"))
-  (setq custom-dir-p (if (or (= ans "Yes") (not ans) ) nil ans))
+  (setq ans (getkword (strcat "/nDo you wish to specify locations for the .LAS file(s)?"
+                              "/n[Y]es [N]o, default is No"))
+  (setq use-custom-dir-p (if (or (= ans "No") (not ans) ) nil ans))
   (setq file-list (LM:GETFILES "Layerset files to convert" "" "ls3"))
-  (HGG:Convert-Ls3-File:Process-Files file-list custom-dir-p)
+  (HGG:Convert-Ls3-File:Process-Files file-list use-custom-dir-p)
   )
 ;;)
 
@@ -109,10 +110,10 @@
 ;;;   From a file list using the default filename, this function will recursively go through
 ;;;   the file list and create a LAS type file for each member in the list.
 ;;; DECLARATION
-(defun HGG:Convert-Ls3-File:Process-Files (file-list default-filename / ls3-file las-filename las-file)
+(defun HGG:Convert-Ls3-File:Process-Files (file-list use-custom-dir-p / ls3-file las-filename las-file)
 ;;; ARGUMENTS
 ;;;   file-list -- List of files to convert from ls3 to las.
-;;;   default-filename -- A predicate wannabe used to determine if the default filename
+;;;   use-custom-dir-p -- The path of the custom directory or 'nil' if none was requested.
 ;;; VARIABLES
 ;;;   ls3-file -- The ls3-file being read to create the las-file.
 ;;;   las-filename -- The path of the las-file to write to.
@@ -126,33 +127,29 @@
 ;;;   HGG:CONVERT-Ls3-File:Process-Files
 ;;;   HGG:Convert-Ls3-File
 ;;; TODO
-;;;   S.P.@01-05-16 -- Update the behavior of default-filename to act more like a
-;;;                    custom-file-dir-p.
-;;;   S.P.@01-03-16 -- Consider using cond to split up statements and allow for output upon
-;;;                    success.
+;;;   S.P.@01-20-16 -- Consider using generic and helpful error messages when generated upon failed
+;;;                    read or write operations.
 ;;; SOURCE
-  (if (and (/= file-list nil) (setq ls3-file (open (car file-list) "r")a))
+  (if (and file-list (setq ls3-file (open (car file-list) "r")))
     (progn
-      (print (concatenate "\nLS3 File \"" ls3-file "\" loaded."))
-      (if default-filename
+      (print (concatenate "LS3 File \"" ls3-file "\" loaded."))
+      (if use-custom-dir-p
         (setq las-filename (vl-string-subst "las" "ls3" ls3-file))
-        (setq las-filename (getfiled "Specify location to save layer state file:" "" "las" 0))
+        (setq las-filename (getfiled "Specify location to save .LAS file:" "" "las" 0))
         )
       (if (setq las-file (open las-filename "w"))
         (progn
           (HGG:Convert-Ls3-File:Process-File (ls3-file las-file))
-          (close ls3-file)
-          (close las-file)
           (print (concatenate "\n" las-filename " created."))
           )
-        ;; replace with generic *error:
-        (print (print (concatenate "\nWARNING: Error creating \"" las-filename "\".")))
+        (print (print (concatenate "\nWARNING: Error in writing to \"" las-filename "\".")))
         )
+      (close las-file)
       )
-    ;; replace with generic *error:
-    (print (print (concatenate "\nWARNING: Error reading \"" ls3-file "\".")))
-    (HGG:Convert-Ls3-File:Process-Files (cdr file-list) default-filename); Recursive call
+    (print (print (concatenate "\nWARNING: Error in reading \"" ls3-file "\".")))
     )
+  (close ls3-file)
+  (HGG:Convert-Ls3-File:Process-Files (cdr file-list) use-custom-dir-p); Recursive call
   )
 ;;)
 
