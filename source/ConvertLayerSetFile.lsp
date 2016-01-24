@@ -44,12 +44,6 @@
 ;;;   documentation tags in AutoLisp.
 ;;; BUGS
 ;;; TODO
-;;;   S.P.@12-20-15 -- Finish layer-state processing.
-;;;   S.P.@01-06-16 -- Document Code.
-;;;   S.P.@01-06-16 -- Implement RoboDoc Support
-;;;   S.P.@01-06-16 -- Implement layer-state accessing (nth # layer-state) using global
-;;;                    variables as mock enums to remove the magic numbers.
-;;;   S.P.@01-06-16 -- Go through code and complete functions.
 ;;;   S.P.@01-06-16 -- Make flowchart of process to understand wtf is going on.
 ;;;   S.P.@01-06-16 -- Debug in Visual Lisp
 ;;; SEE ALSO
@@ -65,7 +59,7 @@
 ;;; DECLARATION
 (setq +default-LAS-state+ (list "" 64 7 "Continuous" -3 "Color_7" 0 0 ))
 ;;; TODO
-;;;   S.P.@01-07-16 -- Refactor to include "HGG" mock name space.
+;;;   S.P.@01-21-16 -- Test code in VLISP Debugger.
 ;;)
 (load "GetFilesv1-4.lsp"
       (progn
@@ -132,21 +126,21 @@
 ;;; SOURCE
   (if (and file-list (setq ls3-file (open (car file-list) "r")))
     (progn
-      (print (concatenate "LS3 File \"" ls3-file "\" loaded."))
+      (print (strcat "LS3 File \"" ls3-file "\" loaded."))
       (if use-custom-dir-p
         (setq las-filename (vl-string-subst "las" "ls3" ls3-file))
         (setq las-filename (getfiled "Specify location to save .LAS file:" "" "las" 0))
         )
       (if (setq las-file (open las-filename "w"))
         (progn
-          (HGG:Convert-Ls3-File:Process-File (ls3-file las-file))
-          (print (concatenate "\n" las-filename " created."))
+          (HGG:Convert-Ls3-File:Process-File ls3-file las-file)
+          (print (strcat las-filename " created."))
           )
-        (print (print (concatenate "\nWARNING: Error in writing to \"" las-filename "\".")))
+        (print (strcat "\nWARNING: Error in writing to \"" las-filename "\"."))
         )
       (close las-file)
       )
-    (print (print (concatenate "\nWARNING: Error in reading \"" ls3-file "\".")))
+    (print (strcat "\nWARNING: Error in reading \"" ls3-file "\"."))
     )
   (close ls3-file)
   (HGG:Convert-Ls3-File:Process-Files (cdr file-list) use-custom-dir-p); Recursive call
@@ -161,67 +155,63 @@
 ;;;   This function will also princ an error message when the parsing has failed somehow and will
 ;;;   print the layerstate with the failed values set to the default found in HGG:+default-state+.
 ;;; DECLARATION
-(defun HGG:Convert-Ls3-File:Process-File (ls3-file las-file / line layers layer-state)
+(defun HGG:Convert-Ls3-File:Process-File (ls3-file las-file / line las-list ls3-state las-state)
 ;;; ARGUMENTS
 ;;;   ls3-file -- The *.ls3 file to be read.
 ;;;   las-file -- The *.las file to be written to.
 ;;; VARIABLES
 ;;;   line -- The current line being read in ls3-file.
-;;;   layers -- A list of all of the layers in the drawing with their corresponing layer-state.
-;;;   layer-state -- The layer-state in LAS format. See documentation for function
-;;;                  HGG:Convert-Ls3-File:Ls3-State:From-Ls3 for format.
+;;;   las-list -- A list of all of the layers in the drawing with their corresponing layer-state.
+;;;   ls3-state -- The layer-state in LS3 format. See Documentation for function
+;;;                HGG:Convert-Ls3-File:Ls3-State:Parse-string for format.
+;;;   las-state -- The layer-state in LAS format. See documentation for function
+;;;                HGG:Convert-Ls3-File:Ls3-State:From-Ls3 for format.
 ;;; EXAMPLE
 ;;;   (HGG:Convert-Ls3-File:Process-File ls3-file-to-read-from las-file-to-write-to)
 ;;; CALLS
 ;;;   HGG:Convert-Ls3-File:Ls3-State:Parse-string
+;;;   HGG:Convert-Ls3-File:Ls3-State:From-Ls3
 ;;;   HGG:Convert-Ls3-File:Ls3-State:State-Print
 ;;;   HGG:Read-To-Delimiter
 ;;; CALLED BY
 ;;;   HGG:CONVERT-Ls3-File:Process-Files
 ;;; NOTES
 ;;; TODO
-;;;   S.P.@01-05-16 -- Make sure it works!
-;;;   S.P.@01-05-16 -- Make layer-state a LAS type state. Right now it is a LS3 type state
-;;;                    because it is calling HGG:Convert-Ls3-File:Ls3-State:Parse-string
-;;;                    which returns a LS3 type state!
 ;;; SOURCE
   (while (setq line (read-line ls3-file))
-    (progn
-      ;; Are we on the first line?
-      (if (equal (vl-string-elt line 0) (ascii ";"))
+    ; Are we on the first line?
+    (if (= (vl-string-elt line 0) (ascii ";"))
+      (progn ; then
+        (write-line "0/nLAYERSTATEDICTIONARY/n0/nLAYERSTATE/n1/n" las-file)
+        (vl-string-trim ";" line)
 
-        ;; then:
-        (progn
-          (write-line "0/nLAYERSTATEDICTIONARY/n0/nLAYERSTATE/n1/n" las-file)
-          (vl-string-trim ";" line)
-
-          ;; Parse ls3 description and use as las name. 09 = HT or tab in ascii
-          (write-line (strcat (HGG:Read-To-Delimiter line 09) "\n") las-file)
-          (write-line "91\n2047\n301\n" las-file)
-          ;; Parse ls3 author and use as las description.
-          (write-line (strcat "Author: "(HGG:Read-To-Delimiter line 09) "\n") las-file)
-          (write-line "290\n1\n302\n" las-file)
-          )
-
-        ;; else:
-        (progn
-          (setq layer-state (HGG:Convert-Ls3-File:Ls3-State:Parse-string line))
-          ;; Is the layer state the current layer?
-            (if (equal (last layer-state) 1
-               (cons layer-state layers)
-               (append layers layer-state)
-              )
+        ; Parse ls3 description and use as las name. 09 = HT or tab in ascii
+        (write-line (strcat (HGG:Read-To-Delimiter line 09) "\n") las-file)
+        (write-line "91\n2047\n301\n" las-file)
+        ; Parse ls3 author and use as las description.
+        (write-line (strcat "Author: "(HGG:Read-To-Delimiter line 09) "\n") las-file)
+        (write-line "290\n1\n302\n" las-file)
+        )
+      (progn ; else
+        (setq ls3-state (HGG:Convert-Ls3-File:Ls3-State:Parse-string line))
+        (setq las-state (HGG:Convert-Ls3-File:Ls3-State:From-Ls3 ls3-state))
+        ; Is the layer state the current layer?
+          (if (= (nth 6 las-state) 1
+             (setq las-list (cons las-state las-list)) ; then
+             (setq las-list (append las-list las-state)) ; else
             )
-          ); else
-        ); if
+          )
+        )
       )
     )
-  (write-line (strcat (car (car layers)) "\n")); write current layer.
-  (foreach layer layers
-    ;; Create a list of layer-state's with #1 being the current layer.
-    (if(HGG:Convert-Ls3-File:Ls3-State:State-Print layer); if success.
-        (HGG:Convert-Ls3-File:Ls3-State:State-Print layer); then
-        (print (strcat "Error in processing layer: " (car layer)))
+  (write-line (strcat (car (car las-list)) "\n") las-file); write current layer.
+  (foreach las-state las-list
+    (progn
+      (if (> (last las-state) 0); if layer has error
+        (princ (strcat "WARNING: Error code " (last las-state) " was found for layer '"
+                       (car las-state) "'. Default values for corrupt properties were used./n"))
+        )
+      (write-line (HGG:Convert-Ls3-File:Ls3-State:State-Print las-state) las-file)
       )
     )
   )
@@ -284,12 +274,9 @@
 ;;;                          3 = Multiple states were found to be invalid.
 ;;;                          4 = Unknown error
 ;;; TODO
-;;;   S.P.@01-05-16 -- For reducing complexity, have this function return the layer state
-;;;                    in a LS3 type format. Makes it more testable as well.
-;;;   S.P.@01-06-16 -- Try to remove the local variable and just build the list to check as you go.
 ;;; SOURCE
-  (while (not (equal string "\n"))
-    (setq ls3-state (append ls3-state (HGG:Read-To-Delimiter string 09)))
+  (while (/= string "\n")
+    (setq ls3-state (append ls3-state (HGG:Read-To-Delimiter string 09))); 09 = HT or /t
     )
   (HGG:Convert-Ls3-File:Ls3-State:Check-For-Errors ls3-state)
   )
@@ -301,13 +288,12 @@
 ;;; PURPOSE
 ;;;   Validates a LAS type later-state and sets the error code on the returned las-state.
 ;;; DECLARATION
-(defun HGG:Convert-Ls3-File:Ls3-State:Check-For-Errors (ls3-state is_new_state
+(defun HGG:Convert-Ls3-File:Ls3-State:Check-For-Errors (ls3-state
                                    / _err:no-error_ _err:invalid-size_
                                    _err:bad-value_ _state:max-length_ _state:factors_
                                    _state:bit-max_ _state:bit-min_ _state:color-max_ _state:color-min_)
 ;;; ARGUMENTS
 ;;;   ls3-state -- The layer -state in LS3 Type format.
-;;;   is_new_state -- A predicate to indicate whether this is a brand new state or not.
 ;;; VARIABLES
 ;;;   _err:no-error_ -- (Constant) The error code for No Error.
 ;;;   _err:invalid-size_ -- (Constant) The error code for a layer sate of invalid size.
@@ -327,6 +313,7 @@
 ;;;   HGG:Replace-N
 ;;;   +default-state+
 ;;; CALLED BY
+;;;   HGG:Convert-Ls3-File:Ls3-State:Parse-string
 ;;; NOTES
 ;;;   The LAS type structure has an error code stored in (nth 7 las-state). This is the error code
 ;;;   that is set. See [FUNC] for more detail on the LAS type structure.
@@ -343,14 +330,14 @@
 ;;;   Note that if an error was found in the las-state, the states are set to their default values.
 ;;;   This may change in the future if the user wishes to give permision on this feature.
 ;;; TODO
-;;;   S.P.@01-07-16 -- Remove dependency on "is_new_state".
 ;;;   S.P.@01-06-16 -- Make local constants global.
+;;;   S.P.@01-24-16 -- Create support for error code 3 and define or remove error code 4.
 ;;; SOURCE
   (setq _err:no-error_ 0)
   (setq _err:invalid-size_ 1)
   (setq _err:bad-value_ 20)
   (setq _state:max-length_ 8)
-  (if (= is_new_state 1) (1- _state:max-length_))
+  (if (/= (length ls3-state) _state:max-length_) (1- _state:max-length_))
   (setq _state:factors_ (1 2 4 16 64 128))
   (setq _state:bit-max_ (+ _state:factors_))
   (setq _state:bit-min_ 0)
@@ -473,8 +460,8 @@
 ;;;   (setq ls3-state (list "Test layer" 64 7 "Continuous" 211 Color_7 0 0))
 ;;;   (princ (HGG:Convert-Ls3-File:Ls3-State:From-Ls3 ls3-state))
 ;;;   ;:> ((8 "Test Layer") (90 8) (62 7) (370 211) (6 "Continuous) (2 Color_7) (440 33554687) 0)
-;;; CALLS
 ;;; CALLED BY
+;;;   HGG:Convert-Ls3-File:Process-File
 ;;; NOTES
 ;;; TODO
 ;;; SOURCE
@@ -524,23 +511,22 @@
 ;;;   (setq ls3-state (list "Test layer" 64 7 "Continuous" 211 Color_7 0 0))
 ;;;   (setq las-state (HGG:Convert-Ls3-File:Ls3-State:From-Ls3 ls3-state))
 ;;;   (princ (HGG:Convert-Ls3-File:Ls3-State:State-Print))
-;;;   ;:> 
-;;;   ;:> 8
-;;;   ;:> Test Layer
-;;;   ;:> 90
-;;;   ;:> 8
-;;;   ;:> 62
-;;;   ;:> 7
-;;;   ;:> 370
-;;;   ;:> 211
-;;;   ;:> 6
-;;;   ;:> Continuous
-;;;   ;:> 2
-;;;   ;:> Color_7
-;;;   ;:> 440
-;;;   ;:> 33554687
-;;; CALLS
+;;;   ;:> 8\n
+;;;   ;:> Test Layer\n
+;;;   ;:> 90\n
+;;;   ;:> 8\n
+;;;   ;:> 62\n
+;;;   ;:> 7\n
+;;;   ;:> 370\n
+;;;   ;:> 211\n
+;;;   ;:> 6\n
+;;;   ;:> Continuous\n
+;;;   ;:> 2\n
+;;;   ;:> Color_7\n
+;;;   ;:> 440\n
+;;;   ;:> 33554687\n
 ;;; CALLED BY
+;;;   HGG:Convert-Ls3-File:Process-File
 ;;; NOTES
 ;;; TODO
 ;;;   S.P.@01-08-16 -- Finish Function
@@ -549,9 +535,9 @@
   (setq _state:printable-attribute-size_ 2)
   (setq string-to-return "")
   (foreach attribute las-state
-    (if (= (length attribute  _state:printable-attribute-size_)
-      (setq (strcat string-to-return "\n" (vl-princ-to-string (car attribute)) "\n"
-                    (vl-princ-to-string (cdr attribute)))
+    (if (= (length attribute) _state:printable-attribute-size_)
+      (setq string-to-return (strcat string-to-return (vl-princ-to-string (car attribute)) "\n"
+                    (vl-princ-to-string (cdr attribute)) "\n"))
       )
     )
   (string-to-return)
