@@ -1,4 +1,5 @@
-﻿// (C) Copyright 2017 by  
+﻿using System.Resources;
+// (C) Copyright 2017 by  
 
 //
 using System.Reflection;
@@ -54,9 +55,11 @@ using System.Runtime.InteropServices;
 //   (*) Delay Signing is an advanced option - see the Microsoft .NET Framework
 //       documentation for more information on this.
 
-// TODO: Confirm Key File is both needed and if so, installed.
+// TODO: Confirm Key File is both needed and if so, installed correctly.
 [assembly: AssemblyDelaySign(false)]
-[assembly: AssemblyKeyFile("")
+// [assembly: AssemblyKeyFile("..\res\HGG-Key.pfx")]
+[assembly: AssemblyKeyFile("")]
+// [assembly: AssemblyKeyName("HGG-Key")]
 [assembly: AssemblyKeyName("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
@@ -66,3 +69,5 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("7607e427-196f-428e-9fc6-7ef771fe22f1")]
+[assembly: NeutralResourcesLanguage("en")]
+

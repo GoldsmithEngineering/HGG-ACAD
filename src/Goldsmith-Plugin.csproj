@@ -57,7 +57,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>HGG-Key.pfx</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>res\HGG-Key.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AcCoreMgd">
@@ -265,9 +265,14 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>myCommands.resx</DependentUpon>
     </Compile>
-    <Compile Include="myPlugin.cs" />
     <Compile Include="cmd\myCommands.cs" />
+    <Compile Include="plugin\myPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="cmd\myCommands.resx">
@@ -299,13 +304,13 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="config\acad.lin" />
     <None Include="config\acad.lsp" />
     <None Include="config\acad.pgp" />
     <None Include="config\C3D.arg" />
     <None Include="config\C3D_NEW.arg" />
     <None Include="config\StartAutoCAD2015.bat" />
-    <None Include="HGG-Key.pfx" />
     <None Include="lsp\Clean.lsp" />
     <None Include="lsp\CloseTraverse.lsp" />
     <None Include="lsp\ConvertLayerSetFile.lsp" />
@@ -319,6 +324,10 @@
     <None Include="lsp\SurfaceElevationAnalysis.lsp" />
     <None Include="lsp\Third-Party\GetFilesv1-4.lsp" />
     <None Include="lsp\XrefAttachAtLayer.LSP" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
     <None Include="res\doc\layer-state_rv\ALL_THE_LAYER_STATES.dwg" />
     <None Include="res\doc\layer-state_rv\ALL_THE_LAYER_STATES.las" />
     <None Include="res\doc\layer-state_rv\ALL_THE_LAYER_STATES.ls3" />
@@ -326,6 +335,7 @@
     <None Include="res\doc\msc\layerSet_Sample.ls3" />
     <None Include="res\doc\msc\layerState_sample.las" />
     <None Include="res\doc\msc\Network Administraters Guide.pdf" />
+    <None Include="res\HGG-Key.pfx" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="res\config\autolisp_syntax_highlighting.xml" />
