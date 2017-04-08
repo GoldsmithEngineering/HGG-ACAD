@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Goldsmith_Plugin.Modules {
+namespace Goldsmith_Plugin.cmd {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Goldsmith_Plugin.Modules {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Goldsmith_Plugin.Modules.myCommands", typeof(myCommands).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Goldsmith_Plugin.cmd.myCommands", typeof(myCommands).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

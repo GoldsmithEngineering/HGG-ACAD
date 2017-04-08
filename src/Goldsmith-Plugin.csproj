@@ -260,17 +260,17 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Modules\myCommands.Designer.cs">
+    <Compile Include="cmd\myCommands.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>myCommands.resx</DependentUpon>
     </Compile>
     <Compile Include="myPlugin.cs" />
-    <Compile Include="Modules\myCommands.cs" />
+    <Compile Include="cmd\myCommands.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Modules\myCommands.resx">
+    <EmbeddedResource Include="cmd\myCommands.resx">
       <DependentUpon>myCommands.cs</DependentUpon>
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>myCommands.Designer.cs</LastGenOutput>
@@ -299,41 +299,41 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Configuration\acad.lin" />
-    <None Include="Configuration\acad.lsp" />
-    <None Include="Configuration\acad.pgp" />
-    <None Include="Configuration\C3D.arg" />
-    <None Include="Configuration\C3D_NEW.arg" />
-    <None Include="Configuration\StartAutoCAD2015.bat" />
+    <None Include="config\acad.lin" />
+    <None Include="config\acad.lsp" />
+    <None Include="config\acad.pgp" />
+    <None Include="config\C3D.arg" />
+    <None Include="config\C3D_NEW.arg" />
+    <None Include="config\StartAutoCAD2015.bat" />
     <None Include="HGG-Key.pfx" />
-    <None Include="Modules\LISP\Clean.lsp" />
-    <None Include="Modules\LISP\CloseTraverse.lsp" />
-    <None Include="Modules\LISP\ConvertLayerSetFile.lsp" />
-    <None Include="Modules\LISP\HelperFunc.lsp" />
-    <None Include="Modules\LISP\LayerFreeze.lsp" />
-    <None Include="Modules\LISP\NestedProbe.lsp" />
-    <None Include="Modules\LISP\Restore.lsp" />
-    <None Include="Modules\LISP\SelectInLayer.lsp" />
-    <None Include="Modules\LISP\SetupAutoCAD.lsp" />
-    <None Include="Modules\LISP\SuperQuickSave.lsp" />
-    <None Include="Modules\LISP\SurfaceElevationAnalysis.lsp" />
-    <None Include="Modules\LISP\Third-Party\GetFilesv1-4.lsp" />
-    <None Include="Modules\LISP\XrefAttachAtLayer.LSP" />
-    <None Include="Resources\doc\layer-state_rv\ALL_THE_LAYER_STATES.dwg" />
-    <None Include="Resources\doc\layer-state_rv\ALL_THE_LAYER_STATES.las" />
-    <None Include="Resources\doc\layer-state_rv\ALL_THE_LAYER_STATES.ls3" />
-    <None Include="Resources\doc\layer-state_rv\ALL_THE_LAYER_STATES.lsb" />
-    <None Include="Resources\doc\msc\layerSet_Sample.ls3" />
-    <None Include="Resources\doc\msc\layerState_sample.las" />
-    <None Include="Resources\doc\msc\Network Administraters Guide.pdf" />
+    <None Include="lsp\Clean.lsp" />
+    <None Include="lsp\CloseTraverse.lsp" />
+    <None Include="lsp\ConvertLayerSetFile.lsp" />
+    <None Include="lsp\HelperFunc.lsp" />
+    <None Include="lsp\LayerFreeze.lsp" />
+    <None Include="lsp\NestedProbe.lsp" />
+    <None Include="lsp\Restore.lsp" />
+    <None Include="lsp\SelectInLayer.lsp" />
+    <None Include="lsp\SetupAutoCAD.lsp" />
+    <None Include="lsp\SuperQuickSave.lsp" />
+    <None Include="lsp\SurfaceElevationAnalysis.lsp" />
+    <None Include="lsp\Third-Party\GetFilesv1-4.lsp" />
+    <None Include="lsp\XrefAttachAtLayer.LSP" />
+    <None Include="res\doc\layer-state_rv\ALL_THE_LAYER_STATES.dwg" />
+    <None Include="res\doc\layer-state_rv\ALL_THE_LAYER_STATES.las" />
+    <None Include="res\doc\layer-state_rv\ALL_THE_LAYER_STATES.ls3" />
+    <None Include="res\doc\layer-state_rv\ALL_THE_LAYER_STATES.lsb" />
+    <None Include="res\doc\msc\layerSet_Sample.ls3" />
+    <None Include="res\doc\msc\layerState_sample.las" />
+    <None Include="res\doc\msc\Network Administraters Guide.pdf" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\config\autolisp_syntax_highlighting.xml" />
-    <Resource Include="Resources\doc\msc\LayerStateFileSyntax.png" />
-    <Resource Include="Resources\doc\msc\layer_state_syntax.txt" />
-    <Resource Include="Resources\doc\msc\layout.txt" />
-    <Content Include="Resources\doc\RoboDoc\robodoc.rc" />
-    <Resource Include="Resources\doc\vim\hgg_lsp-help.txt" />
+    <Resource Include="res\config\autolisp_syntax_highlighting.xml" />
+    <Resource Include="res\doc\msc\LayerStateFileSyntax.png" />
+    <Resource Include="res\doc\msc\layer_state_syntax.txt" />
+    <Resource Include="res\doc\msc\layout.txt" />
+    <Content Include="res\doc\RoboDoc\robodoc.rc" />
+    <Resource Include="res\doc\vim\hgg_lsp-help.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

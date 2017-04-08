@@ -1,4 +1,0 @@
-C:\Users\Szabi\git\Goldsmith-Plugin\Goldsmith-Plugin\obj\Debug\Goldsmith-Plugin.csprojResolveAssemblyReference.cache
-C:\Users\Szabi\git\Goldsmith-Plugin\Goldsmith-Plugin\obj\Debug\Goldsmith-Plugin.csproj.ResolveComReference.cache
-C:\Users\Szabi\git\Goldsmith-Plugin\Goldsmith-Plugin\obj\Debug\Goldsmith_Plugin.MyCommands.resources
-C:\Users\Szabi\git\Goldsmith-Plugin\Goldsmith-Plugin\obj\Debug\Goldsmith-Plugin.csproj.GenerateResource.Cache
