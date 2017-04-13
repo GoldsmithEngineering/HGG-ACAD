@@ -10,8 +10,8 @@
     <ProjectGuid>{7607E427-196F-428E-9FC6-7EF771FE22F1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Goldsmith_Plugin</RootNamespace>
-    <AssemblyName>Goldsmith-Plugin</AssemblyName>
+    <RootNamespace>HGG_ACAD</RootNamespace>
+    <AssemblyName>HGG-ACAD</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -58,6 +58,9 @@
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>res\HGG-Key.pfx</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ReferencePath>C:\Program Files\Autodesk\AutoCAD 2017\;C:\Program Files\Autodesk\AutoCAD 2017\C3D\;C:\Program Files\Autodesk\AutoCAD 2017\ACA\;C:\Autodesk\Autodesk_ObjectARX_2017_Win_64_and_32_Bit\inc\</ReferencePath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AcCoreMgd">
@@ -260,12 +263,12 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="cmd\myCommands.Designer.cs">
+    <Compile Include="cmd\config.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>myCommands.resx</DependentUpon>
+      <DependentUpon>config.resx</DependentUpon>
     </Compile>
-    <Compile Include="cmd\myCommands.cs" />
+    <Compile Include="cmd\config.cs" />
     <Compile Include="plugin\myPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
@@ -275,10 +278,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="cmd\myCommands.resx">
-      <DependentUpon>myCommands.cs</DependentUpon>
+    <EmbeddedResource Include="cmd\config.resx">
+      <DependentUpon>config.cs</DependentUpon>
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>myCommands.Designer.cs</LastGenOutput>
+      <LastGenOutput>config.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
