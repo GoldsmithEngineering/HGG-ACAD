@@ -1,4 +1,4 @@
-;;(s* HGG/acad.LSP
+;C:\Users\Szabi\git\HGG-ACAD\src\config\acad.lsp;(s* HGG/acad.LSP
 ;;; NAME
 ;;;   acad.lsp -- AutoCAD file that specifies setup and auto loading for functions. (V0.0.1) 
 ;;; COPYRIGHT

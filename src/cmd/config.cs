@@ -7,6 +7,7 @@ using Autodesk.AutoCAD.Runtime;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
+using System.Xml;
 //using Autodesk.AutoCAD.Geometry;
 //using System;
 
@@ -25,16 +26,25 @@ namespace HGG_ACAD
     public class Config
     {
         /// <summary>
-        ///     Loads variables and sets values to xml specified.
+        ///     <para><c>LoadVariables</c> is a simple AutoCAD function
+        ///     that sets all of the default AutoCAD system variables and prompts
+        ///     an error if one or more variables were not set.</para>
         /// </summary>
         /// <returns>
         ///     Number of variables set. Null if xml file not found.
         /// </returns>
+        /// <todo>
+        ///     <list type="bullet">
+        ///         <item>
+        ///             <description>S.P.@04-24-16 - Debug in Visual Lisp</description>
+        ///         </item>
+        ///     </list>
+        /// </todo>
         // LispFunction is similar to CommandMethod but it creates a lisp 
         // callable function. Many return types are supported not just string
         // or integer.
         [LispFunction("LoadVars", "LoadVars")]
-        public int LoadVars(ResultBuffer args) // This method can have any name
+        public int LoadVariables(ResultBuffer args) // This method can have any name
         {
             /* PSUDO CODE:
              * open this.xmlconfig
