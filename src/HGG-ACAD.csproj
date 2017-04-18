@@ -43,6 +43,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -54,13 +55,13 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>res\HGG-Key.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <ReferencePath>C:\Program Files\Autodesk\AutoCAD 2017\;C:\Program Files\Autodesk\AutoCAD 2017\C3D\;C:\Program Files\Autodesk\AutoCAD 2017\ACA\;C:\Autodesk\Autodesk_ObjectARX_2017_Win_64_and_32_Bit\inc\</ReferencePath>
+    <ReferencePath>C:\Program Files\Autodesk\AutoCAD 2017\;C:\Program Files\Autodesk\AutoCAD 2017\C3D\;C:\Program Files\Autodesk\AutoCAD 2017\ACA\;C:\Autodesk\Autodesk_ObjectARX_2017_Win_64_and_32_Bit\inc\;C:\Program Files\Common Files\Autodesk Shared\</ReferencePath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AcCoreMgd">
@@ -107,43 +108,7 @@
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Autodesk.Map.Platform">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Autodesk.Map.Platform.Core">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="ManagedMapApi">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="OSGeo.FDO">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="OSGeo.FDO.Common">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="OSGeo.FDO.Geometry">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="OSGeo.MapGuide.Foundation">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="OSGeo.MapGuide.Geometry">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="OSGeo.MapGuide.PlatformBase">
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="AcMPolygonMGD">
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
@@ -217,42 +182,6 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <COMReference Include="AecXBase">
-      <Guid>{E8BFE300-BF69-431B-9153-1FF0DEF8F613}</Guid>
-      <VersionMajor>7</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </COMReference>
-    <COMReference Include="AecXUIBase">
-      <Guid>{E8BFE100-BF69-431B-9153-1FF0DEF8F613}</Guid>
-      <VersionMajor>7</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </COMReference>
-    <COMReference Include="AutoCAD">
-      <Guid>{D5C3CB6F-AA0A-4D45-B02D-CF2974EFD4BE}</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </COMReference>
-    <COMReference Include="AXDBLib">
-      <Guid>{AB513495-C0DC-4E03-AD6E-E851E08428D1}</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </COMReference>
     <COMReference Include="stdole">
       <Guid>{00020430-0000-0000-C000-000000000046}</Guid>
       <VersionMajor>2</VersionMajor>
