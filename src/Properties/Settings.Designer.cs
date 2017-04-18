@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace HGG_ACAD.Properties {
+namespace HGG.AutoCAD.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

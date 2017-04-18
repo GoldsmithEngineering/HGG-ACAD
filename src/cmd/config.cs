@@ -8,13 +8,14 @@ using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using System.Xml;
+using System.Collections.Generic;
 //using Autodesk.AutoCAD.Geometry;
 //using System;
 
 // This line is not mandatory, but improves loading performances
-[assembly: CommandClass(typeof(HGG_ACAD.Config))]
+[assembly: CommandClass(typeof(HGG.AutoCAD.Config))]
 
-namespace HGG_ACAD
+namespace HGG.AutoCAD
 {
     // This class is instantiated by AutoCAD for each document when
     // a command is called by the user the first time in the context
@@ -25,6 +26,8 @@ namespace HGG_ACAD
     /// </summary>
     public class Config
     {
+        public System.Collections.Generic.Dictionary<string, string> AutoCADVariables =
+            new System.Collections.Generic.Dictionary<string, string>();
         /// <summary>
         ///     <para><c>LoadVariables</c> is a simple AutoCAD function
         ///     that sets all of the default AutoCAD system variables and prompts
@@ -44,7 +47,7 @@ namespace HGG_ACAD
         // callable function. Many return types are supported not just string
         // or integer.
         [LispFunction("LoadVars", "LoadVars")]
-        public int LoadVariables(ResultBuffer args) // This method can have any name
+        public int LoadVariables() // This method can have any name
         {
             /* PSUDO CODE:
              * open this.xmlconfig
@@ -60,7 +63,5 @@ namespace HGG_ACAD
 
             return 1;
         }
-
     }
-
 }
