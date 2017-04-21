@@ -193,13 +193,13 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="cmd\config.Designer.cs">
+    <Compile Include="modules\config.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>config.resx</DependentUpon>
     </Compile>
-    <Compile Include="cmd\config.cs" />
-    <Compile Include="cmd\configTest.cs" />
+    <Compile Include="modules\config.cs" />
+    <Compile Include="modules\configTest.cs" />
     <Compile Include="plugin\myPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
@@ -209,7 +209,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="cmd\config.resx">
+    <EmbeddedResource Include="modules\config.resx">
       <DependentUpon>config.cs</DependentUpon>
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>config.Designer.cs</LastGenOutput>

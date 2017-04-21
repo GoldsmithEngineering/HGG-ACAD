@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace HGG.AutoCAD.cmd {
+namespace HGG.AutoCAD.modules {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace HGG.AutoCAD.cmd {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("HGG.AutoCAD.cmd.config", typeof(config).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("HGG.AutoCAD.modules.config", typeof(config).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

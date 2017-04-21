@@ -28,6 +28,8 @@ namespace HGG.AutoCAD
     {
         public System.Collections.Generic.Dictionary<string, string> AutoCADVariables =
             new System.Collections.Generic.Dictionary<string, string>();
+
+        public const string xmlPath = "S://C3DCONFIG//Configurations.xml";
         /// <summary>
         ///     <para><c>LoadVariables</c> is a simple AutoCAD function
         ///     that sets all of the default AutoCAD system variables and prompts
@@ -46,21 +48,32 @@ namespace HGG.AutoCAD
         // LispFunction is similar to CommandMethod but it creates a lisp 
         // callable function. Many return types are supported not just string
         // or integer.
-        [LispFunction("LoadVars", "LoadVars")]
-        public int LoadVariables() // This method can have any name
+        [LispFunction("HGG-Config-LoadXml", "LoadXml")]
+        public int LoadXml(XmlDocument xml)
         {
             /* PSUDO CODE:
              * open this.xmlconfig
              * if success, than:
              *      iterate through variables
              *      set variable to value
-             *      +1  to NumVarsSet
+             *      +1  to NumVarsConfigured
              *      close this.xmlconfig 
              * else:
              *      return nill
+             * return NumVarsConfigured
+             */
+            return 1;
+        }
+
+        [LispFunction("HGG-Config-LoadVariables", "LoadVariables")]
+        public int LoadVariables() // This method can have any name
+        {
+            /* PSUDO CODE:
+             * iterate through variables
+             *   set variable to value
+             *   1  to NumVarsSet
              * return NumVarsSet
              */
-
             return 1;
         }
     }
