@@ -11,12 +11,16 @@ namespace HGG.AutoCAD
         {
             Config configurationTest = new Config();
             string xmlTestString = "<?xml version=\"1.0\" encoding=\"utf-16\"?>" +
-                "<Configuration><Variables>" +
-                "<Variable Name=\"Foo\"><Value>\"Foo\"</Value>" +
-                "<Description>Foo.d.Bar</Variable>" +
-                "<Variable Name=\"Meaning of life\"><Value>42</Value>" +
-                "<Description>\"Forty-two,\" said Deep Thought, with infinite majesty and calm.\"</Variable>" +
-                "</Variables></Configuration>";
+                "<Configuration>" +
+                    "<Variable name=\"Foo\">" +
+                        "<Value>\"Foo\"</Value>" +
+                        "<Description>Foo.d.Bar</Description>" +
+                    "</Variable>" +
+                    "<Variable name=\"Meaning of life\">" +
+                        "<Value>42</Value>" +
+                        "<Description>\"Forty-two,\" said Deep Thought, with infinite majesty and calm.\"</Description>" +
+                    "</Variable>" +
+                "</Configuration>";
             string xmlBrokenString = "THIS IS NOT AN XML";
             XmlDocument xmlTest = new XmlDocument();
 
@@ -25,37 +29,12 @@ namespace HGG.AutoCAD
             /// dictionary from xml file.
             /// </summary>
             [TestMethod]
-            public void ConfigureVariablesWithSucess()
+            public void LoadXMLWithSucess()
             {
                 this.xmlTest.LoadXml(this.xmlTestString);
-                Assert.AreEqual(1, this.configurationTest.LoadVariables());
-                Assert.AreEqual("Foo", configurationTest.AutoCADVariables["Foo"]);
-                Assert.AreEqual("42", configurationTest.AutoCADVariables["Meaning of life"]);
-            }
-
-            /// <summary>
-            /// Tests Config.ConfigureVariables() to see if variables are were not added as keys
-            /// when loading from a failed xml file.
-            /// </summary>
-            [TestMethod]
-            public void ConfigureVariablesWithBadXml()
-            {
-                this.xmlTest.LoadXml(this.xmlBrokenString);
-                Assert.AreEqual(0, this.configurationTest.LoadXml(this.xmlTest));
-                Assert.AreEqual(0, configurationTest.AutoCADVariables["Foo"]);
-                Assert.AreEqual(0, configurationTest.AutoCADVariables["Meaning of life"]); // There is no hope.
-            }
-
-            /// <summary>
-            /// Tests Config.ConfigureVariables() to see if variables are were not added as keys
-            /// when loading with no xml file.
-            /// </summary>
-            [TestMethod]
-            public void ConfigureVariablesWithNoXML()
-            {
-                Assert.AreEqual(0, this.configurationTest.LoadXml(this.xmlTest));
-                Assert.AreEqual(0, configurationTest.AutoCADVariables["Foo"]);
-                Assert.AreEqual(0, configurationTest.AutoCADVariables["Meaning of life"]); // Absolutely none.
+                Assert.AreEqual(2, this.configurationTest.LoadXML(this.xmlTest));
+                Assert.AreEqual("\"Foo\"", configurationTest.AutoCADVariables["Foo"]);
+                //Assert.AreEqual("42", configurationTest.AutoCADVariables["Meaning of life"]);
             }
 
             /// <summary>

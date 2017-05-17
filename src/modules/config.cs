@@ -29,7 +29,8 @@ namespace HGG.AutoCAD
         public System.Collections.Generic.Dictionary<string, string> AutoCADVariables =
             new System.Collections.Generic.Dictionary<string, string>();
 
-        public const string xmlPath = "S://C3DCONFIG//Configurations.xml";
+        public string xmlPath = "S://C3DCONFIG//Configurations.xml";
+        private XmlDocument xml = new XmlDocument();
         /// <summary>
         ///     <para><c>LoadVariables</c> is a simple AutoCAD function
         ///     that sets all of the default AutoCAD system variables and prompts
@@ -48,33 +49,42 @@ namespace HGG.AutoCAD
         // LispFunction is similar to CommandMethod but it creates a lisp 
         // callable function. Many return types are supported not just string
         // or integer.
-        [LispFunction("HGG-Config-LoadXml", "LoadXml")]
-        public int LoadXml(XmlDocument xml)
+        public int LoadXML(XmlDocument xml)
         {
-            /* PSUDO CODE:
-             * open this.xmlconfig
-             * if success, than:
-             *      iterate through variables
-             *      set variable to value
-             *      +1  to NumVarsConfigured
-             *      close this.xmlconfig 
-             * else:
-             *      return nill
-             * return NumVarsConfigured
-             */
-            return 1;
+            XmlNodeList xmlVariables = xml.SelectNodes("Configuration/Variable");
+            foreach (XmlNode node in xmlVariables)
+            {
+                this.AutoCADVariables.Add(node.Attributes["name"].Value,
+                    node["Value"].InnerText);
+            }
+            return AutoCADVariables.Count;
         }
 
-        [LispFunction("HGG-Config-LoadVariables", "LoadVariables")]
-        public int LoadVariables() // This method can have any name
+        public void SetVariables() // This method can have any name
         {
-            /* PSUDO CODE:
-             * iterate through variables
-             *   set variable to value
-             *   1  to NumVarsSet
-             * return NumVarsSet
-             */
-            return 1;
+            foreach (KeyValuePair<string, string> variable in this.AutoCADVariables)
+            {
+                try
+                {
+                    Application.SetSystemVariable(variable.Key, int.Parse(variable.Key));
+                }
+                catch (System.FormatException e)
+                {
+                    Application.SetSystemVariable(variable.Key, variable.Value);
+                }
+            }
         }
-    }
+
+        [LispFunction("LoadVariables", "HGG:Config:LoadVariables")]
+        public void LoadVariables()
+        {
+            this.xml.Load(this.xmlPath);
+            if (this.LoadXML(this.xml) >= 0)
+            {
+                this.SetVariables();
+            }
+
+            // Write to console: "Variables loaded."
+        }
+}
 }
