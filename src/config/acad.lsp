@@ -59,7 +59,7 @@
 ;;;   |html https://rfsber.home.xs4all.nl/Robo/
 ;;)
 
-;;(f* HGG/ConvertLayerSetFile/HGG:Load-Variables
+;;(f* HGG/HGG:Load-Variables
 ;;; NAME
 ;;;   HGG:Load_Variables -- A simple Autocad System Variable setup function. (V0.0.1)
 ;;; PURPOSE
@@ -128,7 +128,7 @@
   )
 ;;)
 
-;;(f* HGG/ConvertLayerSetFile/HGG:Load-Functions
+;;(f* HGG/HGG:Load-Functions
 ;;; NAME
 ;;;   HGG:Load-Functions -- A simple Function loading function. (V0.0.1)
 ;;; PURPOSE
@@ -157,6 +157,7 @@
     ("TRANSFERELEVATIONS" C:TRANSFERELEVATIONS)
     ("EXPORTELEVATIONS" C:EXPORTELEVATIONS)
     ("IMPORTELEVATIONS" C:IMPORTELEVATIONS)
+	("LAYERFREEZE" C:FR)
     )
   )
 
@@ -179,7 +180,52 @@
   )
 ;;)
 
-;;(f* HGG/ConvertLayerSetFile/HGG:Load-Functions
+;;(f* HGG/Load-Testing
+;;; NAME
+;;;   HGG:Load-Testing -- Sets up testing environment for key users. (V0.0.1)
+;;; PURPOSE
+;;;   Loads specific functions for specific users specified.
+;;; DECLARATION
+(defun HGG:Load-Testing (/ +acad-dlls+ +acad-users+)
+;;; VARIABLES:
+;;; EXAMPLE
+;;;   :> Command: (HGG:Load-Testing)
+;;; CALLS
+;;; TODO
+;;; SOURCE
+
+  (let +acad-dlls+ '(
+	("plotstamp.dll")
+    )
+  )
+
+  (let +acad-users+ '(
+    ("bgoldsmith")
+    ("kford")
+    ("spasztor")
+    ("wgoldsmith")
+    )
+  )
+
+  (setq testing-users +acad-users+)
+  (repeat (length +acad-users+)
+    (if (equal (getvar "loginname") (car testing-users))
+      (setq is-testing-user (1+ is-testing-user))
+    )
+    (setq testing-users (cdr testing-users))
+  )
+
+  (setq dlls-left-to-load +acad-dlls+)
+  (if (> is-testing-user 0)
+    (repeat (length +acad-funcs+)
+      (command "_.netload" (car dlls-left-to-load))
+      (setq dlls-left-to-load (cdr dlls-left-to-load))
+      )
+    )
+  )
+;;)
+
+;;(f* HGG/HGG:Startup
 ;;; NAME
 ;;;   HGG:Startup -- Startup function to be appended to S::STARTUP. (V0.0.1)
 ;;; PURPOSE
@@ -194,8 +240,9 @@
 ;;; TODO
 ;;;   S.P.@04-24-16 -- Debug in Visual Lisp
 ;;; SOURCE
-    (HGG:Load-Variables)
-    (HGG:Load-Functions)
+  (HGG:Load-Variables)
+  (HGG:Load-Functions)
+  (HGG:Load-Testing)
   )
 ;;)
 
