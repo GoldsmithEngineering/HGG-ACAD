@@ -248,6 +248,7 @@
     <None Include="lsp\Clean.lsp" />
     <None Include="lsp\CloseTraverse.lsp" />
     <None Include="lsp\ConvertLayerSetFile.lsp" />
+    <None Include="lsp\CopyRot.lsp" />
     <None Include="lsp\HelperFunc.lsp" />
     <None Include="lsp\LayerFreeze.lsp" />
     <None Include="lsp\NestedProbe.lsp" />
